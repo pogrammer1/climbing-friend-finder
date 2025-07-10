@@ -3,9 +3,11 @@ import React, { useState } from 'react';
 interface LoginFormProps {
   onLogin: (email: string, password: string) => void;
   isLoading?: boolean;
+  error?: string;
+  success?: string;
 }
 
-const LoginForm: React.FC<LoginFormProps> = ({ onLogin, isLoading = false }) => {
+const LoginForm: React.FC<LoginFormProps> = ({ onLogin, isLoading = false, error, success }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -19,6 +21,20 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin, isLoading = false }) => 
       <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
         Login to Climbing Friend Finder
       </h2>
+      
+      {/* Error Message */}
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md">
+          {error}
+        </div>
+      )}
+      
+      {/* Success Message */}
+      {success && (
+        <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-md">
+          {success}
+        </div>
+      )}
       
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
