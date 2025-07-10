@@ -6,10 +6,16 @@ interface User {
   email: string;
   firstName: string;
   lastName: string;
-  experience: string;
+  experience: 'beginner' | 'intermediate' | 'advanced' | 'expert';
   climbingType: string[];
   bio?: string;
   location?: string;
+  preferredGyms?: string[];
+  availability?: {
+    weekdays: boolean;
+    weekends: boolean;
+    evenings: boolean;
+  };
   createdAt: string;
   updatedAt: string;
 }
@@ -54,11 +60,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const storedToken = localStorage.getItem('token');
       if (storedToken) {
         try {
-          const response = await fetch('http://localhost:5000/api/auth/me', {
+          const response = await fetch('http://localhost:5000/api/users/profile', {
             headers: {
-              'Authorization': `Bearer ${storedToken}`
-            }
-          });
+            'Authorization': `Bearer ${storedToken}`
+          }
+        });
           
           if (response.ok) {
             const userData = await response.json();
@@ -106,7 +112,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setToken(data.token);
       
       // Fetch user data
-      const userResponse = await fetch('http://localhost:5000/api/auth/me', {
+      const userResponse = await fetch('http://localhost:5000/api/users/profile', {
         headers: {
           'Authorization': `Bearer ${data.token}`
         }
@@ -151,7 +157,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setToken(data.token);
       
       // Fetch user data
-      const userResponse = await fetch('http://localhost:5000/api/auth/me', {
+      const userResponse = await fetch('http://localhost:5000/api/users/profile', {
         headers: {
           'Authorization': `Bearer ${data.token}`
         }
