@@ -3,80 +3,87 @@ import logo from './logo.svg';
 import './App.css';
 import LoginForm from './components/LoginForm';
 import RegisterForm from './components/RegisterForm';
+import { AuthProvider, useAuth } from './context/AuthContext';
 
-function App() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string>('');
-  const [success, setSuccess] = useState<string>('');
+function AppContent() {
+  const { 
+    user, 
+    isAuthenticated, 
+    isLoading, 
+    login, 
+    register, 
+    logout, 
+    error, 
+    success, 
+    clearMessages 
+  } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
 
   const handleLogin = async (email: string, password: string) => {
-    setIsLoading(true);
-    setError('');
-    setSuccess('');
-    
     try {
-      console.log('Attempting login with email:', email);
-      
-      const response = await fetch('http://localhost:5000/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Login failed');
-      }
-
-      console.log('Login successful! Token received:', data.token ? 'Yes' : 'No');
-      setSuccess('Login successful! Welcome back!');
-      // TODO: Store token and redirect user
-      
-    } catch (error: any) {
-      console.error('Login failed:', error);
-      setError(error.message || 'Login failed. Please try again.');
-    } finally {
-      setIsLoading(false);
+      await login(email, password);
+    } catch (error) {
+      // Error is already handled in the context
     }
   };
 
   const handleRegister = async (userData: any) => {
-    setIsLoading(true);
-    setError('');
-    setSuccess('');
-    
     try {
-      console.log('Attempting registration with:', userData.username);
-      
-      const response = await fetch('http://localhost:5000/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(userData),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Registration failed');
-      }
-
-      console.log('Registration successful! Token received:', data.token ? 'Yes' : 'No');
-      setSuccess('Account created successfully! Welcome to Climbing Friend Finder!');
-      // TODO: Store token and redirect user
-      
-    } catch (error: any) {
-      console.error('Registration failed:', error);
-      setError(error.message || 'Registration failed. Please try again.');
-    } finally {
-      setIsLoading(false);
+      await register(userData);
+    } catch (error) {
+      // Error is already handled in the context
     }
   };
+
+  // Show loading screen while checking authentication
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+        <div className="bg-white rounded-lg shadow-xl p-8 text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show user dashboard if authenticated
+  if (isAuthenticated && user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-500 to-purple-600">
+        <div className="container mx-auto px-4 py-8">
+          <div className="bg-white rounded-lg shadow-xl p-8 max-w-2xl mx-auto">
+            <div className="flex justify-between items-center mb-6">
+              <h1 className="text-3xl font-bold text-gray-800">
+                Welcome, {user.firstName}!
+              </h1>
+              <button
+                onClick={logout}
+                className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md transition-colors duration-200"
+              >
+                Logout
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <h2 className="text-xl font-semibold mb-2">Your Profile</h2>
+                <p><strong>Username:</strong> {user.username}</p>
+                <p><strong>Email:</strong> {user.email}</p>
+                <p><strong>Experience:</strong> {user.experience}</p>
+                <p><strong>Climbing Types:</strong> {user.climbingType.join(', ')}</p>
+              </div>
+              
+              <div className="bg-blue-50 p-4 rounded-lg">
+                <h2 className="text-xl font-semibold mb-2">Coming Soon</h2>
+                <p className="text-gray-600">Profile editing, climbing partner matching, and more features are on the way!</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
@@ -86,8 +93,7 @@ function App() {
           <button
             onClick={() => {
               setIsLogin(true);
-              setError('');
-              setSuccess('');
+              clearMessages();
             }}
             className={`flex-1 py-2 px-4 rounded-md font-medium transition-colors duration-200 ${
               isLogin 
@@ -100,8 +106,7 @@ function App() {
           <button
             onClick={() => {
               setIsLogin(false);
-              setError('');
-              setSuccess('');
+              clearMessages();
             }}
             className={`flex-1 py-2 px-4 rounded-md font-medium transition-colors duration-200 ${
               !isLogin 
@@ -131,6 +136,14 @@ function App() {
         )}
       </div>
     </div>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }
 
