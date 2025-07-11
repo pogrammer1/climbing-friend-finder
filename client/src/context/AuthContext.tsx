@@ -60,7 +60,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const storedToken = localStorage.getItem('token');
       if (storedToken) {
         try {
-          const response = await fetch('http://localhost:5000/api/users/profile', {
+          const response = await fetch('/api/users/profile', {
             headers: {
             'Authorization': `Bearer ${storedToken}`
           }
@@ -93,7 +93,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setSuccess('');
     
     try {
-      const response = await fetch('http://localhost:5000/api/auth/login', {
+      const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -112,7 +112,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setToken(data.token);
       
       // Fetch user data
-      const userResponse = await fetch('http://localhost:5000/api/users/profile', {
+      const userResponse = await fetch('/api/users/profile', {
         headers: {
           'Authorization': `Bearer ${data.token}`
         }
@@ -138,7 +138,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setSuccess('');
     
     try {
-      const response = await fetch('http://localhost:5000/api/auth/register', {
+      const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -157,7 +157,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setToken(data.token);
       
       // Fetch user data
-      const userResponse = await fetch('http://localhost:5000/api/users/profile', {
+      const userResponse = await fetch('/api/users/profile', {
         headers: {
           'Authorization': `Bearer ${data.token}`
         }

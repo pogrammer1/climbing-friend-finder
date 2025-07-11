@@ -1,56 +1,344 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
+
+interface User {
+  _id: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  location: string;
+  experience: string;
+  climbingType: string[];
+  availability: {
+    weekdays: boolean;
+    weekends: boolean;
+    evenings: boolean;
+  };
+  bio: string;
+  preferredGyms: string[];
+  climbingGrade: {
+    bouldering?: string;
+    sport?: string;
+    trad?: string;
+  };
+  createdAt: string;
+}
+
+interface SearchFilters {
+  location: string;
+  experienceLevel: string;
+  climbingTypes: string[];
+  availability: string[];
+}
+
+interface SearchResults {
+  users: User[];
+  pagination: {
+    current: number;
+    total: number;
+    hasMore: boolean;
+  };
+}
 
 const Search: React.FC = () => {
+  const { token } = useAuth();
+  const [filters, setFilters] = useState<SearchFilters>({
+    location: '',
+    experienceLevel: '',
+    climbingTypes: [],
+    availability: []
+  });
+  const [results, setResults] = useState<SearchResults | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const experienceLevels = [
+    'beginner',
+    'intermediate',
+    'advanced',
+    'expert'
+  ];
+
+  const climbingTypeOptions = [
+    'bouldering',
+    'sport',
+    'trad',
+    'gym',
+    'outdoor'
+  ];
+
+  const availabilityOptions = [
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+    'Sunday'
+  ];
+
+  const searchUsers = async (page = 1) => {
+    if (!token) return;
+
+    setLoading(true);
+    setError('');
+
+    try {
+      const queryParams = new URLSearchParams();
+      
+      if (filters.location) queryParams.append('location', filters.location);
+      if (filters.experienceLevel) queryParams.append('experienceLevel', filters.experienceLevel);
+      if (filters.climbingTypes.length > 0) {
+        filters.climbingTypes.forEach(type => queryParams.append('climbingTypes', type));
+      }
+      if (filters.availability.length > 0) {
+        filters.availability.forEach(day => queryParams.append('availability', day));
+      }
+      
+      queryParams.append('page', page.toString());
+      queryParams.append('limit', '10');
+
+      const response = await fetch(`/api/users/search?${queryParams}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to search users');
+      }
+
+      const data = await response.json();
+      setResults(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Search failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleFilterChange = (field: keyof SearchFilters, value: any) => {
+    setFilters(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    searchUsers(1);
+  };
+
+  const handlePageChange = (page: number) => {
+    searchUsers(page);
+  };
+
+  const clearFilters = () => {
+    setFilters({
+      location: '',
+      experienceLevel: '',
+      climbingTypes: [],
+      availability: []
+    });
+    setResults(null);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            <h1 className="text-3xl font-bold text-gray-800 mb-6">Find Climbing Partners</h1>
+        <div className="max-w-6xl mx-auto">
+          <h1 className="text-3xl font-bold text-gray-800 mb-6">Find Climbing Partners</h1>
+          
+          {/* Search Filters */}
+          <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">Search Filters</h2>
             
-            <div className="space-y-6">
-              <div className="bg-blue-50 p-4 rounded-lg">
-                <h2 className="text-lg font-semibold text-blue-800 mb-2">Partner Search</h2>
-                <p className="text-blue-700">
-                  The climbing partner search and matching system is coming soon! You'll be able to find climbers 
-                  based on location, experience level, climbing types, and availability.
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-green-50 p-4 rounded-lg">
-                  <h3 className="text-lg font-semibold text-green-800 mb-2">Search Features</h3>
-                  <ul className="text-green-700 space-y-1">
-                    <li>• Filter by location</li>
-                    <li>• Match by experience level</li>
-                    <li>• Find similar climbing types</li>
-                    <li>• Check availability schedules</li>
-                    <li>• View climbing grades</li>
-                  </ul>
+            <form onSubmit={handleSearch} className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {/* Location */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Location
+                  </label>
+                  <input
+                    type="text"
+                    value={filters.location}
+                    onChange={(e) => handleFilterChange('location', e.target.value)}
+                    placeholder="City, State"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
                 </div>
 
-                <div className="bg-purple-50 p-4 rounded-lg">
-                  <h3 className="text-lg font-semibold text-purple-800 mb-2">Matching System</h3>
-                  <ul className="text-purple-700 space-y-1">
-                    <li>• Smart compatibility scoring</li>
-                    <li>• Mutual interest notifications</li>
-                    <li>• Direct messaging</li>
-                    <li>• Climbing history</li>
-                    <li>• Safety ratings</li>
-                  </ul>
+                {/* Experience Level */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Experience Level
+                  </label>
+                  <select
+                    value={filters.experienceLevel}
+                    onChange={(e) => handleFilterChange('experienceLevel', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Any Level</option>
+                    {experienceLevels.map(level => (
+                      <option key={level} value={level}>{level}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Climbing Types */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Climbing Types
+                  </label>
+                  <select
+                    multiple
+                    value={filters.climbingTypes}
+                    onChange={(e) => {
+                      const selected = Array.from(e.target.selectedOptions, option => option.value);
+                      handleFilterChange('climbingTypes', selected);
+                    }}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    {climbingTypeOptions.map(type => (
+                      <option key={type} value={type}>{type}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Availability */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Available Days
+                  </label>
+                  <select
+                    multiple
+                    value={filters.availability}
+                    onChange={(e) => {
+                      const selected = Array.from(e.target.selectedOptions, option => option.value);
+                      handleFilterChange('availability', selected);
+                    }}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    {availabilityOptions.map(day => (
+                      <option key={day} value={day}>{day}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
 
-              <div className="bg-yellow-50 p-4 rounded-lg">
-                <h3 className="text-lg font-semibold text-yellow-800 mb-2">Coming Soon</h3>
-                <p className="text-yellow-700">
-                  We're building an advanced matching algorithm that will help you find the perfect climbing partner. 
-                  The system will consider your climbing preferences, experience level, availability, and location 
-                  to suggest compatible partners.
-                </p>
+              <div className="flex gap-3">
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+                >
+                  {loading ? 'Searching...' : 'Search'}
+                </button>
+                <button
+                  type="button"
+                  onClick={clearFilters}
+                  className="px-6 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                >
+                  Clear Filters
+                </button>
               </div>
-            </div>
+            </form>
           </div>
+
+          {/* Error Message */}
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md mb-6">
+              {error}
+            </div>
+          )}
+
+          {/* Search Results */}
+          {results && (
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <h2 className="text-xl font-semibold text-gray-800 mb-4">
+                Search Results ({results.users.length} users found)
+              </h2>
+              
+              {results.users.length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-gray-500">No climbing partners found matching your criteria.</p>
+                  <p className="text-gray-400 text-sm mt-2">Try adjusting your filters or expanding your search.</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {results.users.map((user) => (
+                    <div key={user._id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1">
+                          <h3 className="text-lg font-semibold text-gray-800">
+                            {user.firstName} {user.lastName}
+                          </h3>
+                          <p className="text-gray-600 text-sm mb-2">@{user.username}</p>
+                          
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                            <div>
+                              <p className="text-gray-700">
+                                <span className="font-medium">Location:</span> {user.location}
+                              </p>
+                                                             <p className="text-gray-700">
+                                 <span className="font-medium">Experience:</span> {user.experience}
+                               </p>
+                               <p className="text-gray-700">
+                                 <span className="font-medium">Climbing Types:</span> {user.climbingType.join(', ')}
+                               </p>
+                             </div>
+                             <div>
+                               <p className="text-gray-700">
+                                 <span className="font-medium">Available:</span> {[
+                                   user.availability.weekdays ? 'Weekdays' : '',
+                                   user.availability.weekends ? 'Weekends' : '',
+                                   user.availability.evenings ? 'Evenings' : ''
+                                 ].filter(Boolean).join(', ')}
+                               </p>
+                               <p className="text-gray-700">
+                                 <span className="font-medium">Preferred Gyms:</span> {user.preferredGyms.join(', ') || 'None specified'}
+                               </p>
+                            </div>
+                          </div>
+                          
+                          {user.bio && (
+                            <p className="text-gray-600 mt-2 text-sm">{user.bio}</p>
+                          )}
+                        </div>
+                        
+                        <button className="ml-4 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 text-sm">
+                          Message
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Pagination */}
+              {results.pagination.total > 1 && (
+                <div className="flex justify-center mt-6">
+                  <div className="flex gap-2">
+                    {Array.from({ length: results.pagination.total }, (_, i) => i + 1).map((page) => (
+                      <button
+                        key={page}
+                        onClick={() => handlePageChange(page)}
+                        className={`px-3 py-2 rounded-md text-sm ${
+                          page === results.pagination.current
+                            ? 'bg-blue-600 text-white'
+                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                        }`}
+                      >
+                        {page}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>

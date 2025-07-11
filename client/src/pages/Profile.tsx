@@ -30,6 +30,7 @@ const Profile: React.FC = () => {
         throw new Error(data.message || 'Failed to update profile');
       }
 
+      console.log('Profile updated successfully!', data);
       setSuccess('Profile updated successfully!');
       setIsEditing(false);
       
