@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 interface User {
   _id: string;
@@ -42,6 +43,7 @@ interface SearchResults {
 
 const Search: React.FC = () => {
   const { token } = useAuth();
+  const navigate = useNavigate();
   const [filters, setFilters] = useState<SearchFilters>({
     location: '',
     experienceLevel: '',
@@ -142,6 +144,30 @@ const Search: React.FC = () => {
       availability: []
     });
     setResults(null);
+  };
+
+  const handleStartConversation = async (recipientId: string) => {
+    try {
+      const response = await fetch('/api/messages/start-conversation', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ recipientId })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        // Navigate to messages page with the new conversation
+        navigate('/messages');
+      } else {
+        const errorData = await response.json();
+        console.error('Error response:', errorData);
+      }
+    } catch (error) {
+      console.error('Error starting conversation:', error);
+    }
   };
 
   return (
@@ -308,7 +334,10 @@ const Search: React.FC = () => {
                           )}
                         </div>
                         
-                        <button className="ml-4 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 text-sm">
+                        <button 
+                          onClick={() => handleStartConversation(user._id)}
+                          className="ml-4 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
+                        >
                           Message
                         </button>
                       </div>

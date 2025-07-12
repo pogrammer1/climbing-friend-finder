@@ -8,6 +8,7 @@ import Auth from './pages/Auth';
 import Dashboard from './pages/Dashboard';
 import Profile from './pages/Profile';
 import Search from './pages/Search';
+import Messages from './pages/Messages';
 
 function AppContent() {
   return (
@@ -40,6 +41,14 @@ function AppContent() {
               <>
                 <Navigation />
                 <Search />
+              </>
+            </ProtectedRoute>
+          } />
+          <Route path="/messages" element={
+            <ProtectedRoute>
+              <>
+                <Navigation />
+                <Messages />
               </>
             </ProtectedRoute>
           } />
