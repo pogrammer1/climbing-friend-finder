@@ -8,6 +8,13 @@ interface AuthRequest extends Request {
   user?: any;
 }
 
+// Socket.IO instance (will be set from index.ts)
+let io: any;
+
+export const setSocketIO = (socketIO: any) => {
+  io = socketIO;
+};
+
 const router = express.Router();
 
 // Get all conversations for the current user
@@ -147,6 +154,11 @@ router.post('/send', auth, async (req: AuthRequest, res) => {
 
     // Populate sender info for response
     await message.populate('sender', 'firstName lastName profilePicture');
+
+    // Emit real-time message to conversation participants
+    if (io) {
+      io.to(`conversation_${conversation._id}`).emit('messageReceived', message);
+    }
 
     res.json(message);
   } catch (error) {

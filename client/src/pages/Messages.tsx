@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useSocket } from '../context/SocketContext';
 
 interface Conversation {
   _id: string;
@@ -38,12 +39,16 @@ interface Message {
 
 const Messages: React.FC = () => {
   const { user, token } = useAuth();
+  const { socket, isConnected, joinConversation, leaveConversation, sendTypingIndicator } = useSocket();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
+  const [typingUsers, setTypingUsers] = useState<Set<string>>(new Set());
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Fetch conversations
   const fetchConversations = async () => {
@@ -128,6 +133,30 @@ const Messages: React.FC = () => {
     fetchMessages(conversationId);
   };
 
+  // Handle typing indicator with debounce
+  const handleTyping = (isTyping: boolean) => {
+    if (selectedConversation) {
+      // Clear existing timeout
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+
+      // Send typing indicator immediately
+      sendTypingIndicator(selectedConversation, isTyping);
+
+      // If typing stopped, clear the timeout
+      if (!isTyping) {
+        typingTimeoutRef.current = null;
+      } else {
+        // Set timeout to stop typing indicator after 3 seconds
+        typingTimeoutRef.current = setTimeout(() => {
+          sendTypingIndicator(selectedConversation, false);
+          typingTimeoutRef.current = null;
+        }, 3000);
+      }
+    }
+  };
+
   // Handle Enter key press
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -139,6 +168,73 @@ const Messages: React.FC = () => {
   useEffect(() => {
     fetchConversations();
   }, []);
+
+  // Socket event listeners
+  useEffect(() => {
+    if (socket) {
+      console.log('Setting up socket event listeners');
+      
+      // Clean up any existing listeners first
+      socket.off('messageReceived');
+      socket.off('userTyping');
+      
+      // Listen for new messages
+      socket.on('messageReceived', (message: Message) => {
+        console.log('Received new message:', message);
+        setMessages(prev => {
+          // Check if message already exists to prevent duplicates
+          const messageExists = prev.some(m => m._id === message._id);
+          if (messageExists) {
+            console.log('Message already exists, not adding duplicate');
+            return prev;
+          }
+          return [...prev, message];
+        });
+        // Refresh conversations to update last message
+        fetchConversations();
+      });
+
+      // Listen for typing indicators
+      socket.on('userTyping', (data: { userId: string; isTyping: boolean }) => {
+        console.log('Received typing indicator:', data);
+        setTypingUsers(prev => {
+          const newSet = new Set(prev);
+          if (data.isTyping) {
+            newSet.add(data.userId);
+          } else {
+            newSet.delete(data.userId);
+          }
+          return newSet;
+        });
+      });
+
+      return () => {
+        console.log('Cleaning up socket event listeners');
+        socket.off('messageReceived');
+        socket.off('userTyping');
+      };
+    }
+  }, [socket]);
+
+  // Auto-scroll to bottom when new messages arrive
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  // Join/leave conversation rooms
+  useEffect(() => {
+    if (selectedConversation && isConnected) {
+      joinConversation(selectedConversation);
+      return () => {
+        leaveConversation(selectedConversation);
+        // Clear typing timeout when leaving conversation
+        if (typingTimeoutRef.current) {
+          clearTimeout(typingTimeoutRef.current);
+          typingTimeoutRef.current = null;
+        }
+      };
+    }
+  }, [selectedConversation, isConnected, joinConversation, leaveConversation]);
 
   useEffect(() => {
     if (selectedConversation) {
@@ -156,7 +252,15 @@ const Messages: React.FC = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-gray-800 mb-8">Messages</h1>
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold text-gray-800">Messages</h1>
+        <div className="flex items-center space-x-2">
+          <div className={`w-3 h-3 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}></div>
+          <span className="text-sm text-gray-600">
+            {isConnected ? 'Connected' : 'Disconnected'}
+          </span>
+        </div>
+      </div>
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[600px]">
         {/* Conversations List */}
@@ -227,9 +331,9 @@ const Messages: React.FC = () => {
 
               {/* Messages */}
               <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                {messages.map((message) => (
+                {messages.map((message, index) => (
                   <div
-                    key={message._id}
+                    key={`${message._id}-${message.createdAt}-${index}`}
                     className={`flex ${message.sender._id === user?._id ? 'justify-end' : 'justify-start'}`}
                   >
                     <div
@@ -251,6 +355,19 @@ const Messages: React.FC = () => {
                     </div>
                   </div>
                 ))}
+                
+                {/* Typing indicators */}
+                {typingUsers.size > 0 && (
+                  <div className="flex justify-start">
+                    <div className="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg">
+                      <p className="text-sm italic text-gray-600">
+                        {Array.from(typingUsers).length === 1 ? 'Someone is typing...' : 'Multiple people are typing...'}
+                      </p>
+                    </div>
+                  </div>
+                )}
+                
+                <div ref={messagesEndRef} />
               </div>
 
               {/* Message Input */}
@@ -258,8 +375,12 @@ const Messages: React.FC = () => {
                 <div className="flex space-x-2">
                   <textarea
                     value={newMessage}
-                    onChange={(e) => setNewMessage(e.target.value)}
+                    onChange={(e) => {
+                      setNewMessage(e.target.value);
+                      handleTyping(e.target.value.length > 0);
+                    }}
                     onKeyPress={handleKeyPress}
+                    onBlur={() => handleTyping(false)}
                     placeholder="Type your message..."
                     className="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                     rows={2}
