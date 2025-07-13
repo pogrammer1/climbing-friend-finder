@@ -16,6 +16,7 @@ interface User {
     weekends: boolean;
     evenings: boolean;
   };
+  profilePicture?: string;
   createdAt: string;
   updatedAt: string;
 }

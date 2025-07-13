@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import ProfileEditForm from '../components/ProfileEditForm';
+import ProfilePictureUpload from '../components/ProfilePictureUpload';
 
 const Profile: React.FC = () => {
   const { user, token } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
+  const [isUploadingPicture, setIsUploadingPicture] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string>('');
   const [success, setSuccess] = useState<string>('');
@@ -44,6 +46,13 @@ const Profile: React.FC = () => {
     }
   };
 
+  const handleProfilePictureSuccess = (profilePicture: string) => {
+    setSuccess('Profile picture updated successfully!');
+    setIsUploadingPicture(false);
+    // Refresh the page to show updated data
+    window.location.reload();
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
@@ -56,16 +65,30 @@ const Profile: React.FC = () => {
               error={error}
               success={success}
             />
+          ) : isUploadingPicture ? (
+            <ProfilePictureUpload
+              onUploadSuccess={handleProfilePictureSuccess}
+              onCancel={() => setIsUploadingPicture(false)}
+              currentProfilePicture={user?.profilePicture}
+            />
           ) : (
             <div className="bg-white rounded-lg shadow-lg p-6">
               <div className="flex justify-between items-center mb-6">
                 <h1 className="text-3xl font-bold text-gray-800">Profile Settings</h1>
-                <button
-                  onClick={() => setIsEditing(true)}
-                  className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md transition-colors duration-200"
-                >
-                  Edit Profile
-                </button>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setIsUploadingPicture(true)}
+                    className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-md transition-colors duration-200"
+                  >
+                    Upload Picture
+                  </button>
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md transition-colors duration-200"
+                  >
+                    Edit Profile
+                  </button>
+                </div>
               </div>
               
               <div className="space-y-6">
@@ -75,6 +98,27 @@ const Profile: React.FC = () => {
                     {success}
                   </div>
                 )}
+
+                {/* Profile Picture */}
+                <div className="flex justify-center mb-6">
+                  <div className="relative">
+                    <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-200 border-4 border-gray-300">
+                      {user?.profilePicture ? (
+                        <img
+                          src={user.profilePicture}
+                          alt="Profile"
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <svg className="w-16 h-16 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                          </svg>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
 
                 <div className="border-t pt-6">
                   <h2 className="text-xl font-semibold text-gray-800 mb-4">Personal Information</h2>

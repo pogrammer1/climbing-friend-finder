@@ -284,8 +284,18 @@ const Messages: React.FC = () => {
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold">
-                        {conversation.participant?.name?.charAt(0)?.toUpperCase() || '?'}
+                      <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200 border-2 border-gray-300 flex-shrink-0">
+                        {conversation.participant?.profilePicture ? (
+                          <img
+                            src={conversation.participant.profilePicture}
+                            alt={conversation.participant?.name || 'User'}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-blue-500 flex items-center justify-center text-white font-semibold">
+                            {conversation.participant?.name?.charAt(0)?.toUpperCase() || '?'}
+                          </div>
+                        )}
                       </div>
                       <div>
                         <h3 className="font-semibold text-gray-800">
@@ -320,8 +330,18 @@ const Messages: React.FC = () => {
               {/* Conversation Header */}
               <div className="bg-gray-50 px-4 py-3 border-b">
                 <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
-                    {conversations.find(c => c._id === selectedConversation)?.participant?.name?.charAt(0)?.toUpperCase() || '?'}
+                  <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-200 border-2 border-gray-300 flex-shrink-0">
+                    {conversations.find(c => c._id === selectedConversation)?.participant?.profilePicture ? (
+                      <img
+                        src={conversations.find(c => c._id === selectedConversation)?.participant?.profilePicture}
+                        alt={conversations.find(c => c._id === selectedConversation)?.participant?.name || 'User'}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-blue-500 flex items-center justify-center text-white font-semibold text-sm">
+                        {conversations.find(c => c._id === selectedConversation)?.participant?.name?.charAt(0)?.toUpperCase() || '?'}
+                      </div>
+                    )}
                   </div>
                   <h3 className="font-semibold text-gray-800">
                     {conversations.find(c => c._id === selectedConversation)?.participant?.name || 'Unknown User'}
@@ -334,8 +354,23 @@ const Messages: React.FC = () => {
                 {messages.map((message, index) => (
                   <div
                     key={`${message._id}-${message.createdAt}-${index}`}
-                    className={`flex ${message.sender._id === user?._id ? 'justify-end' : 'justify-start'}`}
+                    className={`flex ${message.sender._id === user?._id ? 'justify-end' : 'justify-start'} items-end space-x-2`}
                   >
+                    {message.sender._id !== user?._id && (
+                      <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-200 border-2 border-gray-300 flex-shrink-0">
+                        {message.sender.profilePicture ? (
+                          <img
+                            src={message.sender.profilePicture}
+                            alt={`${message.sender.firstName} ${message.sender.lastName}`}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-blue-500 flex items-center justify-center text-white font-semibold text-xs">
+                            {message.sender.firstName?.charAt(0)?.toUpperCase() || '?'}
+                          </div>
+                        )}
+                      </div>
+                    )}
                     <div
                       className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
                         message.sender._id === user?._id

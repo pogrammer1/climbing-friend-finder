@@ -17,6 +17,7 @@ interface User {
   };
   bio: string;
   preferredGyms: string[];
+  profilePicture?: string;
   climbingGrade: {
     bouldering?: string;
     sport?: string;
@@ -297,41 +298,62 @@ const Search: React.FC = () => {
                   {results.users.map((user) => (
                     <div key={user._id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
                       <div className="flex justify-between items-start">
-                        <div className="flex-1">
-                          <h3 className="text-lg font-semibold text-gray-800">
-                            {user.firstName} {user.lastName}
-                          </h3>
-                          <p className="text-gray-600 text-sm mb-2">@{user.username}</p>
-                          
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                            <div>
-                              <p className="text-gray-700">
-                                <span className="font-medium">Location:</span> {user.location}
-                              </p>
-                                                             <p className="text-gray-700">
-                                 <span className="font-medium">Experience:</span> {user.experience}
-                               </p>
-                               <p className="text-gray-700">
-                                 <span className="font-medium">Climbing Types:</span> {user.climbingType.join(', ')}
-                               </p>
-                             </div>
-                             <div>
-                               <p className="text-gray-700">
-                                 <span className="font-medium">Available:</span> {[
-                                   user.availability.weekdays ? 'Weekdays' : '',
-                                   user.availability.weekends ? 'Weekends' : '',
-                                   user.availability.evenings ? 'Evenings' : ''
-                                 ].filter(Boolean).join(', ')}
-                               </p>
-                               <p className="text-gray-700">
-                                 <span className="font-medium">Preferred Gyms:</span> {user.preferredGyms.join(', ') || 'None specified'}
-                               </p>
+                        <div className="flex items-start space-x-4 flex-1">
+                          {/* Profile Picture */}
+                          <div className="flex-shrink-0">
+                            <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-200 border-2 border-gray-300">
+                              {user.profilePicture ? (
+                                <img
+                                  src={user.profilePicture}
+                                  alt={`${user.firstName} ${user.lastName}`}
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center">
+                                  <svg className="w-8 h-8 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                                  </svg>
+                                </div>
+                              )}
                             </div>
                           </div>
                           
-                          {user.bio && (
-                            <p className="text-gray-600 mt-2 text-sm">{user.bio}</p>
-                          )}
+                          <div className="flex-1">
+                            <h3 className="text-lg font-semibold text-gray-800">
+                              {user.firstName} {user.lastName}
+                            </h3>
+                            <p className="text-gray-600 text-sm mb-2">@{user.username}</p>
+                          
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                              <div>
+                                <p className="text-gray-700">
+                                  <span className="font-medium">Location:</span> {user.location}
+                                </p>
+                                <p className="text-gray-700">
+                                  <span className="font-medium">Experience:</span> {user.experience}
+                                </p>
+                                <p className="text-gray-700">
+                                  <span className="font-medium">Climbing Types:</span> {user.climbingType.join(', ')}
+                                </p>
+                              </div>
+                              <div>
+                                <p className="text-gray-700">
+                                  <span className="font-medium">Available:</span> {[
+                                    user.availability.weekdays ? 'Weekdays' : '',
+                                    user.availability.weekends ? 'Weekends' : '',
+                                    user.availability.evenings ? 'Evenings' : ''
+                                  ].filter(Boolean).join(', ')}
+                                </p>
+                                <p className="text-gray-700">
+                                  <span className="font-medium">Preferred Gyms:</span> {user.preferredGyms.join(', ') || 'None specified'}
+                                </p>
+                              </div>
+                            </div>
+                            
+                            {user.bio && (
+                              <p className="text-gray-600 mt-2 text-sm">{user.bio}</p>
+                            )}
+                          </div>
                         </div>
                         
                         <button 

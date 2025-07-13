@@ -134,6 +134,81 @@ router.put('/profile', auth, async (req: any, res) => {
   }
 });
 
+// Test endpoint for debugging
+router.get('/profile/picture/test', (req, res) => {
+  console.log('Test endpoint hit');
+  res.json({ message: 'Profile picture test endpoint working' });
+});
+
+// Upload profile picture
+router.post('/profile/picture', auth, async (req: any, res) => {
+  console.log('Profile picture upload request received');
+  console.log('Request body:', req.body);
+  try {
+    const userId = req.user.user.id;
+    const { profilePicture } = req.body;
+
+    // Handle profile picture removal
+    if (profilePicture === null) {
+      const user = await User.findByIdAndUpdate(
+        userId,
+        { $unset: { profilePicture: 1 } },
+        { new: true, runValidators: true }
+      ).select('-password');
+
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+
+      console.log('Profile picture removed successfully');
+      res.json({ 
+        message: 'Profile picture removed successfully',
+        profilePicture: null 
+      });
+      return;
+    }
+
+    // Validate that profilePicture is a base64 string
+    if (!profilePicture || typeof profilePicture !== 'string') {
+      return res.status(400).json({ message: 'Profile picture data is required' });
+    }
+
+    // Basic validation for base64 image
+    if (!profilePicture.startsWith('data:image/')) {
+      return res.status(400).json({ message: 'Invalid image format' });
+    }
+
+    // Check file size (limit to 5MB)
+    const base64Data = profilePicture.split(',')[1];
+    const fileSizeInBytes = Math.ceil((base64Data.length * 3) / 4);
+    const fileSizeInMB = fileSizeInBytes / (1024 * 1024);
+    
+    if (fileSizeInMB > 5) {
+      return res.status(400).json({ message: 'Image size must be less than 5MB' });
+    }
+
+    // Update user's profile picture
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { profilePicture },
+      { new: true, runValidators: true }
+    ).select('-password');
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    console.log('Profile picture updated successfully');
+    res.json({ 
+      message: 'Profile picture updated successfully',
+      profilePicture: user.profilePicture 
+    });
+  } catch (error) {
+    console.error('Profile picture upload error:', error);
+    res.status(500).json({ message: 'Failed to upload profile picture' });
+  }
+});
+
 // Get user by ID (for viewing profiles) - This must come LAST
 router.get('/:userId', auth, async (req: any, res) => {
   try {
