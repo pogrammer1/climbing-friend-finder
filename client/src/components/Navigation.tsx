@@ -63,6 +63,16 @@ const Navigation: React.FC = () => {
             >
               Messages
             </Link>
+            <Link
+              to="/climbing-history"
+              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
+                isActive('/climbing-history')
+                  ? 'bg-blue-500 text-white'
+                  : 'text-gray-700 hover:text-blue-600'
+              }`}
+            >
+              History
+            </Link>
           </div>
 
           {/* User Menu */}

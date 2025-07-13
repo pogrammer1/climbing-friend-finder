@@ -6,6 +6,7 @@ import { connectDB } from './config/database';
 import authRoutes from './routes/auth';
 import userRoutes from './routes/users';
 import messageRoutes, { setSocketIO } from './routes/messages';
+import climbingRoutes from './routes/climbing';
 
 const app = express();
 const server = createServer(app);
@@ -27,6 +28,7 @@ app.use(express.urlencoded({ limit: '10mb', extended: true }));
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/messages', messageRoutes);
+app.use('/api/climbing', climbingRoutes);
 
 // Test endpoint
 app.get('/api/test', (req, res) => {

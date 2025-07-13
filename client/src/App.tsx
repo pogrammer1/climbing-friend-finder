@@ -10,6 +10,7 @@ import Dashboard from './pages/Dashboard';
 import Profile from './pages/Profile';
 import Search from './pages/Search';
 import Messages from './pages/Messages';
+import ClimbingHistory from './pages/ClimbingHistory';
 
 function AppContent() {
   return (
@@ -50,6 +51,14 @@ function AppContent() {
               <>
                 <Navigation />
                 <Messages />
+              </>
+            </ProtectedRoute>
+          } />
+          <Route path="/climbing-history" element={
+            <ProtectedRoute>
+              <>
+                <Navigation />
+                <ClimbingHistory />
               </>
             </ProtectedRoute>
           } />
