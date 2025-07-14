@@ -18,7 +18,7 @@ const Navigation: React.FC = () => {
         setNotifLoading(true);
         setNotifError('');
         try {
-          const response = await fetch('/api/notifications', {
+          const response = await fetch(`${process.env.REACT_APP_API_URL}/api/notifications`, {
             headers: { 'Authorization': `Bearer ${token}` }
           });
           const data = await response.json();
@@ -45,7 +45,7 @@ const Navigation: React.FC = () => {
 
   const handleMarkAsRead = async (notifId: string) => {
     try {
-      await fetch(`/api/notifications/${notifId}/read`, {
+      await fetch(`${process.env.REACT_APP_API_URL}/api/notifications/${notifId}/read`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` }
       });

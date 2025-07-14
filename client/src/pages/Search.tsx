@@ -101,7 +101,7 @@ const Search: React.FC = () => {
       queryParams.append('page', page.toString());
       queryParams.append('limit', '10');
 
-      const response = await fetch(`/api/users/search?${queryParams}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/users/search?${queryParams}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -149,7 +149,7 @@ const Search: React.FC = () => {
 
   const handleStartConversation = async (recipientId: string) => {
     try {
-      const response = await fetch('/api/messages/start-conversation', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/messages/start-conversation`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

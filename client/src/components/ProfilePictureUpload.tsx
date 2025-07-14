@@ -56,7 +56,7 @@ const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({
     setError('');
 
     try {
-      const response = await fetch('/api/users/profile/picture', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/users/profile/picture`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -84,7 +84,7 @@ const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({
     setError('');
 
     try {
-      const response = await fetch('/api/users/profile/picture', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/users/profile/picture`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

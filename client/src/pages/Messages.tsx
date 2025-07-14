@@ -53,7 +53,7 @@ const Messages: React.FC = () => {
   // Fetch conversations
   const fetchConversations = async () => {
     try {
-      const response = await fetch('/api/messages/conversations', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/messages/conversations`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -76,7 +76,7 @@ const Messages: React.FC = () => {
   // Fetch messages for a conversation
   const fetchMessages = async (conversationId: string) => {
     try {
-      const response = await fetch(`/api/messages/conversations/${conversationId}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/messages/conversations/${conversationId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -100,7 +100,7 @@ const Messages: React.FC = () => {
       const conversation = conversations.find(c => c._id === selectedConversation);
       if (!conversation) return;
 
-      const response = await fetch('/api/messages/send', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/messages/send`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

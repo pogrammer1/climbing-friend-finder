@@ -60,13 +60,13 @@ const ClimbingHistory: React.FC = () => {
   const fetchData = async () => {
     try {
       const [sessionsRes, achievementsRes, statisticsRes] = await Promise.all([
-        fetch('/api/climbing/sessions', {
+        fetch(`${process.env.REACT_APP_API_URL}/api/climbing/sessions`, {
           headers: { 'Authorization': `Bearer ${token}` }
         }),
-        fetch('/api/climbing/achievements', {
+        fetch(`${process.env.REACT_APP_API_URL}/api/climbing/achievements`, {
           headers: { 'Authorization': `Bearer ${token}` }
         }),
-        fetch('/api/climbing/statistics', {
+        fetch(`${process.env.REACT_APP_API_URL}/api/climbing/statistics`, {
           headers: { 'Authorization': `Bearer ${token}` }
         })
       ]);
@@ -123,8 +123,8 @@ const ClimbingHistory: React.FC = () => {
     
     try {
       const url = editingSession 
-        ? `/api/climbing/sessions/${editingSession._id}`
-        : '/api/climbing/sessions';
+        ? `${process.env.REACT_APP_API_URL}/api/climbing/sessions/${editingSession._id}`
+        : `${process.env.REACT_APP_API_URL}/api/climbing/sessions`;
       
       const method = editingSession ? 'PUT' : 'POST';
       
@@ -167,7 +167,7 @@ const ClimbingHistory: React.FC = () => {
     }
 
     try {
-      const response = await fetch(`/api/climbing/sessions/${sessionId}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/climbing/sessions/${sessionId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
