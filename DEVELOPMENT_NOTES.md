@@ -129,6 +129,15 @@
     - Implemented session filtering and search functionality
     - Tested complete climbing history workflow with session management
 
+16. **Production Deployment & Final Integration**
+    - Deployed backend to Railway and frontend to Vercel with environment variable integration
+    - Exposed Railway backend service and generated public API URL
+    - Fixed double-slash API URL bug by removing trailing slash in REACT_APP_API_URL
+    - Updated all frontend API calls to use process.env.REACT_APP_API_URL for production compatibility
+    - Fixed profile viewing logic: /profile/:userId now correctly displays other users' profiles
+    - Confirmed all major features work in production (auth, search, messaging, follow/unfollow, notifications)
+    - Documented deployment steps and troubleshooting for future reference
+
 ### 🔄 Current Status:
 - **Complete authentication system** with JWT tokens and user persistence
 - **Multi-page React application** with protected routes and navigation
@@ -334,5 +343,5 @@ climbing-friend-finder/
 - ✅ TypeScript for type safety
 
 ---
-*Last updated: 7/13/25 - Completed climbing history and achievements system with session tracking, automatic achievement awarding, and comprehensive analytics* 
+*Last updated: 7/14/25 - deployed!
 solo leveling theme for this app? opposite of whole idea of app but could explore(personal note)

@@ -14,14 +14,14 @@ const Profile: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string>('');
   const [success, setSuccess] = useState<string>('');
-  const isOwnProfile = !userId || (user && userId === user._id);
+  const isOwnProfile = !userId || (user && userId === String(user._id));
   const [isFollowing, setIsFollowing] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
-      if (userId) {
+      if (userId && (!user || userId !== String(user._id))) {
         try {
-          const response = await fetch(`/api/users/${userId}`, {
+          const response = await fetch(`${process.env.REACT_APP_API_URL}/api/users/${userId}`, {
             headers: { 'Authorization': `Bearer ${token}` }
           });
           const data = await response.json();
@@ -33,7 +33,7 @@ const Profile: React.FC = () => {
         } catch (err) {
           setError('Failed to load profile');
         }
-      } else {
+      } else if (user) {
         setProfile(user);
       }
     };
