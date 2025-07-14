@@ -24,6 +24,8 @@ export interface IUser extends Document {
   profilePicture?: string;
   createdAt: Date;
   updatedAt: Date;
+  followers: mongoose.Types.ObjectId[];
+  following: mongoose.Types.ObjectId[];
 }
 
 const UserSchema = new Schema<IUser>({
@@ -111,7 +113,17 @@ const UserSchema = new Schema<IUser>({
   },
   profilePicture: {
     type: String
-  }
+  },
+  followers: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: []
+  }],
+  following: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: []
+  }]
 }, {
   timestamps: true
 });

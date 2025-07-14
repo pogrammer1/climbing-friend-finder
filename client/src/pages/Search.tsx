@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 interface User {
   _id: string;
@@ -362,6 +362,11 @@ const Search: React.FC = () => {
                         >
                           Message
                         </button>
+                        <Link to={`/profile/${user._id}`}>
+                          <button className="ml-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm">
+                            View Profile
+                          </button>
+                        </Link>
                       </div>
                     </div>
                   ))}

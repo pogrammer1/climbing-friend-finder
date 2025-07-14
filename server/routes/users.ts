@@ -1,6 +1,9 @@
 import express from 'express';
 import { User } from '../models/User';
 import { auth } from '../middleware/auth';
+import { Notification } from '../models/Notification';
+import mongoose from 'mongoose';
+import { IUser } from '../models/User';
 
 const router = express.Router();
 
@@ -206,6 +209,82 @@ router.post('/profile/picture', auth, async (req: any, res) => {
   } catch (error) {
     console.error('Profile picture upload error:', error);
     res.status(500).json({ message: 'Failed to upload profile picture' });
+  }
+});
+
+// Follow a user
+router.post('/:id/follow', auth, async (req: any, res) => {
+  try {
+    const currentUserId = req.user.user.id;
+    const targetUserId = req.params.id;
+
+    if (currentUserId === targetUserId) {
+      return res.status(400).json({ message: 'You cannot follow yourself.' });
+    }
+
+    const currentUser = await User.findById(currentUserId) as IUser;
+    const targetUser = await User.findById(targetUserId) as IUser;
+
+    if (!currentUser || !targetUser) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    // Prevent duplicate follows
+    if (targetUser.followers.some((id: any) => id.toString() === String(currentUser._id))) {
+      return res.status(400).json({ message: 'Already following this user.' });
+    }
+
+    // Add to following/followers
+    currentUser.following.push(new mongoose.Types.ObjectId(String(targetUser._id)));
+    targetUser.followers.push(new mongoose.Types.ObjectId(String(currentUser._id)));
+    await currentUser.save();
+    await targetUser.save();
+
+    // Create notification for the followed user
+    await Notification.create({
+      user: targetUser._id,
+      type: 'new_follower',
+      data: {
+        followerId: currentUser._id,
+        followerUsername: currentUser.username
+      },
+      read: false
+    });
+
+    res.json({ message: 'User followed successfully.' });
+  } catch (error) {
+    console.error('Follow error:', error);
+    res.status(500).json({ message: 'Failed to follow user.' });
+  }
+});
+
+// Unfollow a user
+router.post('/:id/unfollow', auth, async (req: any, res) => {
+  try {
+    const currentUserId = req.user.user.id;
+    const targetUserId = req.params.id;
+
+    if (currentUserId === targetUserId) {
+      return res.status(400).json({ message: 'You cannot unfollow yourself.' });
+    }
+
+    const currentUser = await User.findById(currentUserId);
+    const targetUser = await User.findById(targetUserId);
+
+    if (!currentUser || !targetUser) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    // Remove from following/followers
+    currentUser.following = currentUser.following.filter((id: any) => id.toString() !== String(targetUser._id));
+    targetUser.followers = targetUser.followers.filter((id: any) => id.toString() !== String(currentUser._id));
+    await currentUser.save();
+    await targetUser.save();
+
+    res.json({ message: 'User unfollowed successfully.' });
+  } catch (error) {
+    console.error('Unfollow error:', error);
+    res.status(500).json({ message: 'Failed to unfollow user.' });
   }
 });
 
