@@ -150,36 +150,22 @@
 - **Profile picture upload system** with base64 encoding and comprehensive validation
 - **Climbing history and achievements system** with session tracking and automatic achievement awarding
 - **Sample user data** for testing search functionality
-- **98% complete** - Ready for deployment and real user testing
+- **?% complete** - Deployed but need to be mobile friendly
 
 ### 🎯 **Project Goals & Timeline:**
 **Primary Goal:** Deploy a functional climbing partner finder for real user testing and feedback
-
-**Current Phase:** Pre-deployment features (1-2 weeks remaining)
-- Add profile pictures, climbing history, and social features
-- Prepare for production deployment
-- Launch to small group of climbers for feedback
 
 **Success Metrics:**
 - Real users can find and connect with climbing partners
 - Messaging system works seamlessly
 - Users provide valuable feedback for future improvements
 
-### 📋 Pre-Deployment Features (Next Priority):
-**Goal: Get app deployed and in real users' hands for feedback**
-
 1. **Mobile Optimization** (in progress)
    - Refactor navigation bar for mobile (hamburger or bottom nav)
    - Ensure all pages are responsive and touch-friendly
    - Test on multiple devices and browsers
    - Address any mobile-specific bugs or layout issues
-2. **Deployment Preparation** (after mobile optimization)
-   - Set up production environment (Railway, Heroku, or Vercel)
-   - Configure production database
-   - Set up environment variables
-   - Test production deployment
-   - Basic performance optimization
-3. **Social Features** (Optional - can be added post-launch)
+2. **Social Features** (Optional - can be added post-launch)
 
 ### 📋 Post-Launch Features (Future iterations):
 **Goal: Enhance based on real user feedback**
@@ -246,18 +232,9 @@ npm start
 # Stop development server
 Ctrl + C
 
-# Navigate to project root
-cd ..
-
 # Install dependencies (new device setup)
 cd client && npm install
 cd server && npm install
-
-# Commit changes
-git add .
-git commit -m "descriptive message"
-git push
-```
 
 ## Environment Setup:
 - Create `.env` file in `server/` directory
@@ -315,4 +292,4 @@ climbing-friend-finder/
 
 ---
 *Last updated: 7/14/25 - deployed!
-solo leveling theme for this app? opposite of whole idea of app but could explore(personal note)
+solo leveling theme for this app? opposite of whole goal of app but could explore(personal note)
