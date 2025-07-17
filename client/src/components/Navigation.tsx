@@ -11,6 +11,23 @@ const Navigation: React.FC = () => {
   const [notifLoading, setNotifLoading] = useState(false);
   const [notifError, setNotifError] = useState('');
   const { token } = useAuth();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Close mobile menu when navigating
+  const handleNavClick = () => setMobileMenuOpen(false);
+
+  // Close mobile menu when clicking outside
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+    const handleClick = (e: MouseEvent) => {
+      const nav = document.getElementById('mobile-nav-menu');
+      if (nav && !nav.contains(e.target as Node)) {
+        setMobileMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [mobileMenuOpen]);
 
   useEffect(() => {
     const fetchNotifications = async () => {
@@ -64,58 +81,24 @@ const Navigation: React.FC = () => {
             </Link>
           </div>
 
-          {/* Navigation Links */}
+          {/* Hamburger for mobile */}
+          <button
+            className="md:hidden p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            onClick={() => setMobileMenuOpen((open) => !open)}
+            aria-label="Open navigation menu"
+          >
+            <svg className="w-7 h-7 text-gray-700" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+
+          {/* Navigation Links (Desktop) */}
           <div className="hidden md:flex items-center space-x-8">
-            <Link
-              to="/dashboard"
-              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
-                isActive('/dashboard')
-                  ? 'bg-blue-500 text-white'
-                  : 'text-gray-700 hover:text-blue-600'
-              }`}
-            >
-              Dashboard
-            </Link>
-            <Link
-              to="/profile"
-              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
-                isActive('/profile')
-                  ? 'bg-blue-500 text-white'
-                  : 'text-gray-700 hover:text-blue-600'
-              }`}
-            >
-              Profile
-            </Link>
-            <Link
-              to="/search"
-              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
-                isActive('/search')
-                  ? 'bg-blue-500 text-white'
-                  : 'text-gray-700 hover:text-blue-600'
-              }`}
-            >
-              Find Partners
-            </Link>
-            <Link
-              to="/messages"
-              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
-                isActive('/messages')
-                  ? 'bg-blue-500 text-white'
-                  : 'text-gray-700 hover:text-blue-600'
-              }`}
-            >
-              Messages
-            </Link>
-            <Link
-              to="/climbing-history"
-              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
-                isActive('/climbing-history')
-                  ? 'bg-blue-500 text-white'
-                  : 'text-gray-700 hover:text-blue-600'
-              }`}
-            >
-              History
-            </Link>
+            <Link to="/dashboard" className={`px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${isActive('/dashboard') ? 'bg-blue-500 text-white' : 'text-gray-700 hover:text-blue-600'}`}>Dashboard</Link>
+            <Link to="/profile" className={`px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${isActive('/profile') ? 'bg-blue-500 text-white' : 'text-gray-700 hover:text-blue-600'}`}>Profile</Link>
+            <Link to="/search" className={`px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${isActive('/search') ? 'bg-blue-500 text-white' : 'text-gray-700 hover:text-blue-600'}`}>Find Partners</Link>
+            <Link to="/messages" className={`px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${isActive('/messages') ? 'bg-blue-500 text-white' : 'text-gray-700 hover:text-blue-600'}`}>Messages</Link>
+            <Link to="/climbing-history" className={`px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${isActive('/climbing-history') ? 'bg-blue-500 text-white' : 'text-gray-700 hover:text-blue-600'}`}>History</Link>
           </div>
 
           {/* User Menu */}
@@ -180,6 +163,18 @@ const Navigation: React.FC = () => {
             </button>
           </div>
         </div>
+        {/* Mobile Navigation Menu */}
+        {mobileMenuOpen && (
+          <div id="mobile-nav-menu" className="md:hidden absolute left-0 right-0 top-16 bg-white border-b border-gray-200 z-40 shadow-lg">
+            <nav className="flex flex-col items-start p-4 space-y-2">
+              <Link to="/dashboard" onClick={handleNavClick} className="w-full px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-blue-100">Dashboard</Link>
+              <Link to="/profile" onClick={handleNavClick} className="w-full px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-blue-100">Profile</Link>
+              <Link to="/search" onClick={handleNavClick} className="w-full px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-blue-100">Find Partners</Link>
+              <Link to="/messages" onClick={handleNavClick} className="w-full px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-blue-100">Messages</Link>
+              <Link to="/climbing-history" onClick={handleNavClick} className="w-full px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-blue-100">History</Link>
+            </nav>
+          </div>
+        )}
       </div>
     </nav>
   );
