@@ -290,7 +290,7 @@ const ClimbingHistory: React.FC = () => {
                               {session.location}
                             </h3>
                             <p className="text-sm text-gray-600">
-                              {formatDate(session.date)} • {session.climbingType} • {formatDuration(session.duration)}
+                              {session.date} • {session.climbingType} • {formatDuration(session.duration)}
                             </p>
                           </div>
                           <div className="flex space-x-2">
