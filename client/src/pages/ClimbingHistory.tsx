@@ -99,7 +99,25 @@ const ClimbingHistory: React.FC = () => {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+    // Create date from string and ensure we're using the date as intended
+    // regardless of timezone by treating it as a local date
+    const date = new Date(dateString);
+    
+    // If the date looks like it might have timezone issues (ends with Z or has time),
+    // parse it more carefully
+    if (dateString.includes('T') || dateString.includes('Z')) {
+      // Extract just the date part and create a new date in local timezone
+      const datePart = dateString.split('T')[0];
+      const [year, month, day] = datePart.split('-').map(Number);
+      const localDate = new Date(year, month - 1, day); // month is 0-indexed
+      return localDate.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+    }
+    
+    return date.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric'
@@ -122,6 +140,13 @@ const ClimbingHistory: React.FC = () => {
     setError('');
     
     try {
+      // Ensure the date is sent in the correct format to avoid timezone issues
+      const processedSessionData = {
+        ...sessionData,
+        // Convert date to ISO string at midnight in local timezone to avoid timezone shifts
+        date: new Date(sessionData.date + 'T00:00:00').toISOString()
+      };
+      
       const url = editingSession 
         ? `${process.env.REACT_APP_API_URL}/api/climbing/sessions/${editingSession._id}`
         : `${process.env.REACT_APP_API_URL}/api/climbing/sessions`;
@@ -134,7 +159,7 @@ const ClimbingHistory: React.FC = () => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(sessionData)
+        body: JSON.stringify(processedSessionData)
       });
 
       if (!response.ok) {
@@ -290,7 +315,7 @@ const ClimbingHistory: React.FC = () => {
                               {session.location}
                             </h3>
                             <p className="text-sm text-gray-600">
-                              {session.date} • {session.climbingType} • {formatDuration(session.duration)}
+                              {formatDate(session.date)} • {session.climbingType} • {formatDuration(session.duration)}
                             </p>
                           </div>
                           <div className="flex space-x-2">

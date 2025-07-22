@@ -38,7 +38,7 @@ const ClimbingSessionForm: React.FC<ClimbingSessionFormProps> = ({
 }) => {
   const { token } = useAuth();
   const [formData, setFormData] = useState({
-    date: new Date().toISOString().split('T')[0],
+    date: new Date().toLocaleDateString('en-CA'), // YYYY-MM-DD format in local timezone
     location: '',
     climbingType: 'gym' as 'bouldering' | 'sport' | 'trad' | 'gym' | 'outdoor',
     routes: [] as Route[],
@@ -69,7 +69,7 @@ const ClimbingSessionForm: React.FC<ClimbingSessionFormProps> = ({
   useEffect(() => {
     if (session) {
       setFormData({
-        date: new Date(session.date).toISOString().split('T')[0],
+        date: new Date(session.date).toLocaleDateString('en-CA'), // YYYY-MM-DD format in local timezone
         location: session.location,
         climbingType: session.climbingType as any,
         routes: session.routes,
