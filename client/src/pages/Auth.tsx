@@ -43,7 +43,7 @@ const Auth: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-md px-4">
         {/* Toggle Buttons */}
         <div className="flex mb-4 bg-white rounded-lg p-1 shadow-lg">
           <button

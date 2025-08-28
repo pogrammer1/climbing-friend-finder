@@ -17,7 +17,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin, isLoading = false, error
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-xl p-8 max-w-md w-full mx-4">
+    <div className="bg-white rounded-lg shadow-xl p-8 max-w-md w-full">
       <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
         Login to Climbing Friend Finder
       </h2>

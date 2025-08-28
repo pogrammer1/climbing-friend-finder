@@ -75,22 +75,11 @@ const Navigation: React.FC = () => {
       <div className="max-w-6xl mx-auto px-4">
         <div className="flex justify-between items-center h-16">
           {/* Logo/Brand */}
-          <div className="flex items-center">
-            <Link to="/dashboard" className="text-xl font-bold text-blue-600">
+          <div className="flex items-center flex-shrink-0"> {/* prevents logo shrinking when space is tight */ }
+            <Link to="/dashboard" className="text-lg md:text-xl font-bold text-blue-600 truncate">  {/* smaller on mobile so displayed correctly */}
               Climbing Friend Finder
             </Link>
           </div>
-
-          {/* Hamburger for mobile */}
-          <button
-            className="md:hidden p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-            onClick={() => setMobileMenuOpen((open) => !open)}
-            aria-label="Open navigation menu"
-          >
-            <svg className="w-7 h-7 text-gray-700" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
 
           {/* Navigation Links (Desktop) */}
           <div className="hidden md:flex items-center space-x-8">
@@ -101,8 +90,8 @@ const Navigation: React.FC = () => {
             <Link to="/climbing-history" className={`px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${isActive('/climbing-history') ? 'bg-blue-500 text-white' : 'text-gray-700 hover:text-blue-600'}`}>History</Link>
           </div>
 
-          {/* User Menu */}
-          <div className="flex items-center space-x-4">
+          {/* User Menu (Desktop) */}
+          <div className="hidden md:flex items-center space-x-4">
             {/* Notifications Bell */}
             <div className="relative">
               <button
@@ -162,16 +151,38 @@ const Navigation: React.FC = () => {
               Logout
             </button>
           </div>
+
+          {/* Mobile Menu Button (Right Side) */}
+          <button
+            className="md:hidden p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" /* md only shows on mobile */
+            onClick={() => setMobileMenuOpen((open) => !open)}
+            aria-label="Open navigation menu"
+          >
+            <svg className="w-7 h-7 text-gray-700" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
         </div>
         {/* Mobile Navigation Menu */}
         {mobileMenuOpen && (
           <div id="mobile-nav-menu" className="md:hidden absolute left-0 right-0 top-16 bg-white border-b border-gray-200 z-40 shadow-lg">
             <nav className="flex flex-col items-start p-4 space-y-2">
+              <div className="w-full px-3 py-2 text-sm text-gray-600 border-b border-gray-200 mb-2">
+                Welcome, {user?.firstName}!
+              </div>
               <Link to="/dashboard" onClick={handleNavClick} className="w-full px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-blue-100">Dashboard</Link>
               <Link to="/profile" onClick={handleNavClick} className="w-full px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-blue-100">Profile</Link>
               <Link to="/search" onClick={handleNavClick} className="w-full px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-blue-100">Find Partners</Link>
               <Link to="/messages" onClick={handleNavClick} className="w-full px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-blue-100">Messages</Link>
               <Link to="/climbing-history" onClick={handleNavClick} className="w-full px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-blue-100">History</Link>
+              <div className="w-full border-t border-gray-200 mt-2 pt-2">
+                <button
+                  onClick={() => { logout(); handleNavClick(); }}
+                  className="w-full text-left px-3 py-2 rounded-md text-base font-medium text-red-600 hover:bg-red-50"
+                >
+                  Logout
+                </button>
+              </div>
             </nav>
           </div>
         )}
