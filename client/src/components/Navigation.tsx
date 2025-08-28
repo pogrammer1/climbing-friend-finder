@@ -16,12 +16,16 @@ const Navigation: React.FC = () => {
   // Close mobile menu when navigating
   const handleNavClick = () => setMobileMenuOpen(false);
 
-  // Close mobile menu when clicking outside
+  // Close mobile menu when clicking outside, but allow toggle by clicking the menu icon
   useEffect(() => {
     if (!mobileMenuOpen) return;
     const handleClick = (e: MouseEvent) => {
       const nav = document.getElementById('mobile-nav-menu');
-      if (nav && !nav.contains(e.target as Node)) {
+      const menuBtn = document.getElementById('mobile-menu-btn');
+      if (
+        nav && !nav.contains(e.target as Node) &&
+        (!menuBtn || !menuBtn.contains(e.target as Node))
+      ) {
         setMobileMenuOpen(false);
       }
     };
@@ -75,8 +79,8 @@ const Navigation: React.FC = () => {
       <div className="max-w-6xl mx-auto px-4">
         <div className="flex justify-between items-center h-16">
           {/* Logo/Brand */}
-          <div className="flex items-center flex-shrink-0"> {/* prevents logo shrinking when space is tight */ }
-            <Link to="/dashboard" className="text-lg md:text-xl font-bold text-blue-600 truncate">  {/* smaller on mobile so displayed correctly */}
+          <div className="flex items-center flex-shrink-0">
+            <Link to="/dashboard" className="text-lg md:text-xl font-bold text-blue-600 truncate">
               Climbing Friend Finder
             </Link>
           </div>
@@ -152,16 +156,72 @@ const Navigation: React.FC = () => {
             </button>
           </div>
 
-          {/* Mobile Menu Button (Right Side) */}
-          <button
-            className="md:hidden p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" /* md only shows on mobile */
-            onClick={() => setMobileMenuOpen((open) => !open)}
-            aria-label="Open navigation menu"
-          >
-            <svg className="w-7 h-7 text-gray-700" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
+          {/* Mobile Menu Button and Bell (Right Side) */}
+          <div className="md:hidden flex items-center space-x-2">
+            {/* Notifications Bell for Mobile */}
+            <div className="relative">
+              <button
+                onClick={() => setShowNotifications((prev) => !prev)}
+                className="focus:outline-none"
+                aria-label="Notifications"
+              >
+                <svg className="w-6 h-6 text-gray-700 hover:text-blue-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                </svg>
+                {unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5 font-bold">
+                    {unreadCount}
+                  </span>
+                )}
+              </button>
+              {showNotifications && (
+                <div className="absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-50 p-4">
+                  <div className="text-gray-700 font-semibold mb-2">Notifications</div>
+                  {notifLoading ? (
+                    <div className="text-gray-500 text-sm">Loading...</div>
+                  ) : notifError ? (
+                    <div className="text-red-500 text-sm">{notifError}</div>
+                  ) : notifications.length === 0 ? (
+                    <div className="text-gray-500 text-sm">No notifications yet</div>
+                  ) : (
+                    <ul className="divide-y divide-gray-200 max-h-64 overflow-y-auto">
+                      {notifications.map((notif) => (
+                        <li
+                          key={notif._id}
+                          className={`py-2 text-sm cursor-pointer ${notif.read ? 'text-gray-400 bg-gray-50' : 'hover:bg-blue-50'}`}
+                          onClick={() => !notif.read && handleMarkAsRead(notif._id)}
+                        >
+                          {notif.type === 'new_follower' ? (
+                            <span>
+                              <span className="font-semibold text-blue-600">@{notif.data?.followerUsername}</span> followed you
+                            </span>
+                          ) : (
+                            <span>{notif.type}</span>
+                          )}
+                          <span className="block text-gray-400 text-xs mt-1">{new Date(notif.createdAt).toLocaleString()}</span>
+                          {notif.read && <span className="ml-2 text-xs">(Read)</span>}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              )}
+            </div>
+            {/* Mobile Menu Button */}
+            <button
+              id="mobile-menu-btn"
+              className="p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onClick={(e) => {
+                e.stopPropagation();
+                setMobileMenuOpen((open) => !open);
+              }}
+              aria-label="Open navigation menu"
+            >
+              <svg className="w-7 h-7 text-gray-700" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+          </div>
         </div>
         {/* Mobile Navigation Menu */}
         {mobileMenuOpen && (
