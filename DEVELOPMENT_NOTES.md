@@ -2,7 +2,7 @@
 
 ## Project Setup Progress
 
-### ✅ Completed Steps:
+### Completed Steps:
 1. **Git Repository Setup**
    - Initialized git repository
    - Connected to GitHub (pogrammer1/climbing-friend-finder)
@@ -138,21 +138,25 @@
     - Confirmed all major features work in production (auth, search, messaging, follow/unfollow, notifications)
     - Documented deployment steps and troubleshooting for future reference
 
-### 🔄 Current Status:
-- All core features implemented and deployed
-- **Mobile optimization in progress:** Refactoring navigation and layout for mobile usability
-- **Multi-page React application** with protected routes and navigation
-- **Full user profile management** with editing capabilities
-- **Express backend** with comprehensive API endpoints
-- **MongoDB Atlas** connected with complete User model
-- **User search and matching system** with advanced filtering capabilities
-- **Complete real-time messaging system** with Socket.IO integration and typing indicators
-- **Profile picture upload system** with base64 encoding and comprehensive validation
-- **Climbing history and achievements system** with session tracking and automatic achievement awarding
-- **Sample user data** for testing search functionality
-- **?% complete** - Deployed but need to be mobile friendly
+### Current Status:
+All core features implemented and deployed
+**Mobile optimization in progress:** Major improvements to navigation (including bell icon for notifications), dashboard UX, and layout for mobile usability. Continued polish and bug fixes for mobile experience.
+**Notification UI:** Added unread badge, mark-as-read, and notification bell in navigation.
+**Date handling fixes:** Resolved timezone and off-by-one errors in climbing session forms and history.
+**Follow/Unfollow:** Enabled following/unfollowing users and viewing other user profiles.
+**API environment variable usage:** All frontend API calls now use environment variables for production compatibility.
+**Multi-page React application** with protected routes and navigation
+**Full user profile management** with editing capabilities
+**Express backend** with comprehensive API endpoints
+**MongoDB Atlas** connected with complete User model
+**User search and matching system** with advanced filtering capabilities
+**Complete real-time messaging system** with Socket.IO integration and typing indicators
+**Profile picture upload system** with base64 encoding and comprehensive validation
+**Climbing history and achievements system** with session tracking and automatic achievement awarding
+**Sample user data** for testing search functionality
+**?% complete** - Deployed but need to be mobile friendly
 
-### 🎯 **Project Goals & Timeline:**
+### Project Goals & Timeline:
 **Primary Goal:** Deploy a functional climbing partner finder for real user testing and feedback
 
 **Success Metrics:**
@@ -167,7 +171,7 @@
    - Address any mobile-specific bugs or layout issues
 2. **Social Features** (Optional - can be added post-launch)
 
-### 📋 Post-Launch Features (Future iterations):
+### Post-Launch Features (Future iterations):
 **Goal: Enhance based on real user feedback**
 
 1. **Advanced Search Features**
@@ -284,12 +288,23 @@ climbing-friend-finder/
 - ✅ MongoDB database integration
 - ✅ TypeScript for type safety
 
-## Recent Fixes & Feedback (Optional Addition)
+## Recent Fixes & Feedback (Optional Addition, maybe add or delete later)
 
+- [8/28]: Improved mobile navigation and dashboard UX, added notification bell icon, and finalized layout issues
+          Fixed date handling and timezone issues in climbing session forms/history
+- [7/??]: Added notification UI with unread badge and mark-as-read functionality
+-       : Enabled following/unfollowing users and viewing other user profiles
+-       : Ensured all frontend API calls use environment variables for production compatibility
 - [Date]: Fixed navigation bar overlap on mobile
 - [Date]: Improved button touch targets for mobile users
 - [Date]: Incorporated user feedback on profile editing flow
+- 
+- [7/14/25]: Deployed! (w/ decently working website)
 
 ---
-*Last updated: 7/14/25 - deployed!
-solo leveling theme for this app? opposite of whole goal of app but could explore(personal note)
+*Last updated: 8/28/25 - fixed dates issues and layout on desktop/mobile
+
+### Next Step
+The next feature to work on is ensuring the notification bell icon is visible and functional on mobile devices. This will improve the mobile navigation experience and ensure users do not miss important notifications while using the app on smaller screens.
+
+*side note: solo leveling theme for this app? opposite of whole goal of app but could explore(personal note)
