@@ -290,21 +290,14 @@ climbing-friend-finder/
 
 ## Recent Fixes & Feedback (Optional Addition, maybe add or delete later)
 
-- [8/28]: Improved mobile navigation and dashboard UX, added notification bell icon, and finalized layout issues
-          Fixed date handling and timezone issues in climbing session forms/history
-- [7/??]: Added notification UI with unread badge and mark-as-read functionality
--       : Enabled following/unfollowing users and viewing other user profiles
--       : Ensured all frontend API calls use environment variables for production compatibility
-- [Date]: Fixed navigation bar overlap on mobile
-- [Date]: Improved button touch targets for mobile users
-- [Date]: Incorporated user feedback on profile editing flow
-- 
+- prob dont need this section cuz github has changes documented 
 - [7/14/25]: Deployed! (w/ decently working website)
+
 
 ---
 *Last updated: 8/28/25 - fixed dates issues and layout on desktop/mobile
 
 ### Next Step
-The next feature to work on is ensuring the notification bell icon is visible and functional on mobile devices. This will improve the mobile navigation experience and ensure users do not miss important notifications while using the app on smaller screens.
+fix layout of different pages on mobile
 
 *side note: solo leveling theme for this app? opposite of whole goal of app but could explore(personal note)

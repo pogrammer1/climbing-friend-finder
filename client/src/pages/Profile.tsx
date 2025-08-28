@@ -125,8 +125,8 @@ const Profile: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-2xl mx-auto">
+      <div className="container mx-auto px-2 sm:px-4 py-6 sm:py-8">
+        <div className="max-w-2xl mx-auto w-full">
           {isEditing ? (
             <ProfileEditForm
               onSave={handleSaveProfile}
@@ -142,21 +142,21 @@ const Profile: React.FC = () => {
               currentProfilePicture={profile?.profilePicture}
             />
           ) : (
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <div className="flex justify-between items-center mb-6">
+            <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 w-full">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
                 <h1 className="text-3xl font-bold text-gray-800">Profile Settings</h1>
                 {/* Only show edit/upload for own profile */}
                 {!userId && (
-                  <div className="flex gap-3">
+                  <div className="flex flex-col sm:flex-row gap-3 w-full">
                     <button
                       onClick={() => setIsUploadingPicture(true)}
-                      className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-md transition-colors duration-200"
+                      className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-md transition-colors duration-200 w-full sm:w-auto"
                     >
                       Upload Picture
                     </button>
                     <button
                       onClick={() => setIsEditing(true)}
-                      className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md transition-colors duration-200"
+                      className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md transition-colors duration-200 w-full sm:w-auto"
                     >
                       Edit Profile
                     </button>
