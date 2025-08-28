@@ -114,8 +114,7 @@ const Navigation: React.FC = () => {
               </button>
               {showNotifications && (
                 <div
-                  className="absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-50 p-4"
-                  style={{ minWidth: '16rem', maxWidth: '90vw' }}
+                  className="absolute mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-50 p-4 w-screen max-w-xs left-1/2 -translate-x-1/2 md:w-80 md:max-w-none md:left-auto md:right-0 md:translate-x-0"
                 >
                   <div className="text-gray-700 font-semibold mb-2">Notifications</div>
                   {notifLoading ? (
@@ -179,8 +178,7 @@ const Navigation: React.FC = () => {
               </button>
               {showNotifications && (
                 <div
-                  className="absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-50 p-4 md:w-80 w-screen left-0 right-0 mx-auto md:left-auto md:right-0"
-                  style={{ minWidth: '0', maxWidth: '100vw' }}
+                  className="absolute mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-50 p-4 w-screen max-w-xs left-1/2 -translate-x-1/2 md:w-80 md:max-w-none md:left-auto md:right-0 md:translate-x-0"
                 >
                   <div className="text-gray-700 font-semibold mb-2">Notifications</div>
                   {notifLoading ? (
