@@ -114,21 +114,24 @@ const Navigation: React.FC = () => {
               </button>
               {showNotifications && (
                 <div
-                  className="absolute mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-50 p-4 w-screen max-w-xs left-1/2 -translate-x-1/2 md:w-80 md:max-w-none md:left-auto md:right-0 md:translate-x-0"
+                  className="absolute mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-50 p-2 sm:p-4 w-[95vw] max-w-xs right-2 left-auto md:w-80 md:max-w-none md:left-auto md:right-0 md:translate-x-0"
+                  style={{ minWidth: '200px' }}
                 >
-                  <div className="text-gray-700 font-semibold mb-2">Notifications</div>
+                  {/* Top arrow/caret */}
+                  <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-b-8 border-l-transparent border-r-transparent border-b-white border-t-0"></div>
+                  <div className="text-gray-700 font-semibold mb-2 text-sm sm:text-base">Notifications</div>
                   {notifLoading ? (
-                    <div className="text-gray-500 text-sm">Loading...</div>
+                    <div className="text-gray-500 text-xs sm:text-sm">Loading...</div>
                   ) : notifError ? (
-                    <div className="text-red-500 text-sm">{notifError}</div>
+                    <div className="text-red-500 text-xs sm:text-sm">{notifError}</div>
                   ) : notifications.length === 0 ? (
-                    <div className="text-gray-500 text-sm">No notifications yet</div>
+                    <div className="text-gray-500 text-xs sm:text-sm">No notifications yet</div>
                   ) : (
-                    <ul className="divide-y divide-gray-200 max-h-64 overflow-y-auto">
+                    <ul className="divide-y divide-gray-200 max-h-48 sm:max-h-64 overflow-y-auto">
                       {notifications.map((notif) => (
                         <li
                           key={notif._id}
-                          className={`py-2 text-sm cursor-pointer ${notif.read ? 'text-gray-400 bg-gray-50' : 'hover:bg-blue-50'}`}
+                          className={`py-2 text-xs sm:text-sm cursor-pointer ${notif.read ? 'text-gray-400 bg-gray-50' : 'hover:bg-blue-50'}`}
                           onClick={() => !notif.read && handleMarkAsRead(notif._id)}
                         >
                           {notif.type === 'new_follower' ? (
@@ -138,8 +141,8 @@ const Navigation: React.FC = () => {
                           ) : (
                             <span>{notif.type}</span>
                           )}
-                          <span className="block text-gray-400 text-xs mt-1">{new Date(notif.createdAt).toLocaleString()}</span>
-                          {notif.read && <span className="ml-2 text-xs">(Read)</span>}
+                          <span className="block text-gray-400 text-[10px] sm:text-xs mt-1">{new Date(notif.createdAt).toLocaleString()}</span>
+                          {notif.read && <span className="ml-2 text-[10px] sm:text-xs">(Read)</span>}
                         </li>
                       ))}
                     </ul>

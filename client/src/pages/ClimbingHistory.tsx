@@ -243,11 +243,11 @@ const ClimbingHistory: React.FC = () => {
           
           {/* Tab Navigation */}
           <div className="bg-white rounded-lg shadow-md mb-6">
-            <div className="border-b border-gray-200 overflow-x-auto">
-              <nav className="flex space-x-4 px-2 sm:space-x-8 sm:px-6 min-w-max">
+            <div className="border-b border-gray-200">
+              <nav className="flex space-x-1 sm:space-x-4 px-0 sm:px-6 w-full justify-between">
                 <button
                   onClick={() => setActiveTab('sessions')}
-                  className={`py-4 px-2 border-b-2 font-medium text-sm whitespace-nowrap ${
+                  className={`py-2 px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap flex-1 text-center ${
                     activeTab === 'sessions'
                       ? 'border-blue-500 text-blue-600'
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -257,7 +257,7 @@ const ClimbingHistory: React.FC = () => {
                 </button>
                 <button
                   onClick={() => setActiveTab('statistics')}
-                  className={`py-4 px-2 border-b-2 font-medium text-sm whitespace-nowrap ${
+                  className={`py-2 px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap flex-1 text-center ${
                     activeTab === 'statistics'
                       ? 'border-blue-500 text-blue-600'
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -267,7 +267,7 @@ const ClimbingHistory: React.FC = () => {
                 </button>
                 <button
                   onClick={() => setActiveTab('achievements')}
-                  className={`py-4 px-2 border-b-2 font-medium text-sm whitespace-nowrap ${
+                  className={`py-2 px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap flex-1 text-center ${
                     activeTab === 'achievements'
                       ? 'border-blue-500 text-blue-600'
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
