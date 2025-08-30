@@ -4,6 +4,7 @@ import { auth } from '../middleware/auth';
 import { Notification } from '../models/Notification';
 import mongoose from 'mongoose';
 import { IUser } from '../models/User';
+import { getCompatibilityScore } from '../utils/matching';
 
 const router = express.Router();
 
@@ -66,23 +67,39 @@ router.get('/search', auth, async (req: any, res) => {
     // Execute search with pagination
     const skip = (parseInt(page as string) - 1) * parseInt(limit as string);
     
+    // Fetch current user for scoring
+    const currentUser = await User.findById(currentUserId).select('-password -email');
+    if (!currentUser) {
+      return res.status(404).json({ message: 'Current user not found' });
+    }
+
     const users = await User.find(searchQuery)
       .select('-password -email')
       .limit(parseInt(limit as string))
       .skip(skip)
       .sort({ createdAt: -1 });
 
+    // Add compatibility score to each user
+    const usersWithScore = users.map((user: any) => {
+      // If age is not present, you may want to add it to the schema and user data
+      const score = getCompatibilityScore(currentUser, user);
+      return { ...user.toObject(), compatibilityScore: score };
+    });
+
+    // Sort users by compatibility score descending
+    usersWithScore.sort((a, b) => b.compatibilityScore - a.compatibilityScore);
+
     // Get total count for pagination
     const total = await User.countDocuments(searchQuery);
 
-    console.log(`Found ${users.length} users matching search criteria`);
+    console.log(`Found ${usersWithScore.length} users matching search criteria`);
 
     res.json({
-      users,
+      users: usersWithScore,
       pagination: {
         current: parseInt(page as string),
         total: Math.ceil(total / parseInt(limit as string)),
-        hasMore: skip + users.length < total
+        hasMore: skip + usersWithScore.length < total
       }
     });
   } catch (error) {

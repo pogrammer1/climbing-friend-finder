@@ -305,9 +305,9 @@ climbing-friend-finder/
 
 
 ---
-*Last updated: 8/28/25 - fixed dates issues and layout on desktop/mobile
+*Last updated: 8/30/25 - Smart matching and compatibility score system
 
 ### Next Step
-Smart matching and compatibility score system
+fix layout of search 
 
 *side note: solo leveling theme for this app? opposite of whole goal of app but could explore(personal note)

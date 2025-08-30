@@ -21,6 +21,7 @@ export interface IUser extends Document {
     evenings: boolean;
   };
   experience: 'beginner' | 'intermediate' | 'advanced' | 'expert';
+  goals?: string[];
   profilePicture?: string;
   createdAt: Date;
   updatedAt: Date;
@@ -111,6 +112,11 @@ const UserSchema = new Schema<IUser>({
     enum: ['beginner', 'intermediate', 'advanced', 'expert'],
     required: true
   },
+  goals: [{
+    type: String,
+    enum: ['training', 'social', 'competition', 'outdoor', 'other'],
+    trim: true
+  }],
   profilePicture: {
     type: String
   },

@@ -24,6 +24,7 @@ interface User {
     trad?: string;
   };
   createdAt: string;
+  compatibilityScore?: number;
 }
 
 interface SearchFilters {
@@ -297,76 +298,79 @@ const Search: React.FC = () => {
                 <div className="space-y-4">
                   {results.users.map((user) => (
                     <div key={user._id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-                      <div className="flex justify-between items-start">
-                        <div className="flex items-start space-x-4 flex-1">
-                          {/* Profile Picture */}
-                          <div className="flex-shrink-0">
-                            <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-200 border-2 border-gray-300">
-                              {user.profilePicture ? (
-                                <img
-                                  src={user.profilePicture}
-                                  alt={`${user.firstName} ${user.lastName}`}
-                                  className="w-full h-full object-cover"
-                                />
-                              ) : (
-                                <div className="w-full h-full flex items-center justify-center">
-                                  <svg className="w-8 h-8 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-                                  </svg>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                          
-                          <div className="flex-1">
-                            <h3 className="text-lg font-semibold text-gray-800">
-                              {user.firstName} {user.lastName}
-                            </h3>
-                            <p className="text-gray-600 text-sm mb-2">@{user.username}</p>
-                          
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                              <div>
-                                <p className="text-gray-700">
-                                  <span className="font-medium">Location:</span> {user.location}
-                                </p>
-                                <p className="text-gray-700">
-                                  <span className="font-medium">Experience:</span> {user.experience}
-                                </p>
-                                <p className="text-gray-700">
-                                  <span className="font-medium">Climbing Types:</span> {user.climbingType.join(', ')}
-                                </p>
+                      <div className="flex flex-col md:flex-row md:items-center md:space-x-6">
+                        {/* Profile Picture */}
+                        <div className="flex-shrink-0 mb-3 md:mb-0 flex flex-col items-center">
+                          <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-200 border-2 border-gray-300">
+                            {user.profilePicture ? (
+                              <img
+                                src={user.profilePicture}
+                                alt={`${user.firstName} ${user.lastName}`}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center">
+                                <svg className="w-8 h-8 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                                </svg>
                               </div>
-                              <div>
-                                <p className="text-gray-700">
-                                  <span className="font-medium">Available:</span> {[
-                                    user.availability.weekdays ? 'Weekdays' : '',
-                                    user.availability.weekends ? 'Weekends' : '',
-                                    user.availability.evenings ? 'Evenings' : ''
-                                  ].filter(Boolean).join(', ')}
-                                </p>
-                                <p className="text-gray-700">
-                                  <span className="font-medium">Preferred Gyms:</span> {user.preferredGyms.join(', ') || 'None specified'}
-                                </p>
-                              </div>
-                            </div>
-                            
-                            {user.bio && (
-                              <p className="text-gray-600 mt-2 text-sm">{user.bio}</p>
                             )}
                           </div>
+                          {/* Compatibility Score Progress Bar */}
+                          {typeof user.compatibilityScore === 'number' && (
+                            <div className="w-28 mt-2">
+                              <div className="flex items-center mb-1">
+                                <span className="text-xs font-medium text-gray-700 mr-2">Match</span>
+                                <span className={`text-xs font-semibold ml-auto ${user.compatibilityScore >= 80 ? 'text-green-600' : user.compatibilityScore >= 50 ? 'text-yellow-600' : 'text-red-600'}`}>{user.compatibilityScore}%</span>
+                              </div>
+                              <div className="w-full bg-gray-200 rounded-full h-2.5">
+                                <div
+                                  className={`h-2.5 rounded-full ${user.compatibilityScore >= 80 ? 'bg-green-500' : user.compatibilityScore >= 50 ? 'bg-yellow-400' : 'bg-red-500'}`}
+                                  style={{ width: `${user.compatibilityScore}%` }}
+                                ></div>
+                              </div>
+                            </div>
+                          )}
                         </div>
-                        
-                        <button 
-                          onClick={() => handleStartConversation(user._id)}
-                          className="ml-4 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
-                        >
-                          Message
-                        </button>
-                        <Link to={`/profile/${user._id}`}>
-                          <button className="ml-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm">
-                            View Profile
+                        {/* Main Info */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+                            <div>
+                              <h3 className="text-lg font-semibold text-gray-800">
+                                {user.firstName} {user.lastName}
+                              </h3>
+                              <p className="text-gray-600 text-sm mb-2">@{user.username}</p>
+                            </div>
+                          </div>
+                          <div className="flex flex-wrap gap-x-6 gap-y-1 text-sm mt-2">
+                            <span className="text-gray-700"><span className="font-medium">Location:</span> {user.location}</span>
+                            <span className="text-gray-700"><span className="font-medium">Experience:</span> {user.experience}</span>
+                            <span className="text-gray-700"><span className="font-medium">Climbing Types:</span> {user.climbingType.join(', ')}</span>
+                            <span className="text-gray-700"><span className="font-medium">Available:</span> {[
+                              user.availability.weekdays ? 'Weekdays' : '',
+                              user.availability.weekends ? 'Weekends' : '',
+                              user.availability.evenings ? 'Evenings' : ''
+                            ].filter(Boolean).join(', ')}</span>
+                            <span className="text-gray-700"><span className="font-medium">Preferred Gyms:</span> {user.preferredGyms.join(', ') || 'None specified'}</span>
+                          </div>
+                          {user.bio && (
+                            <p className="text-gray-600 mt-2 text-sm line-clamp-2 md:line-clamp-3">{user.bio}</p>
+                          )}
+                        </div>
+                        {/* Action Buttons */}
+                        <div className="flex flex-col space-y-2 mt-4 md:mt-0 md:ml-4 items-stretch md:items-end">
+                          <button 
+                            onClick={() => handleStartConversation(user._id)}
+                            className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 text-sm w-full md:w-auto"
+                          >
+                            Message
                           </button>
-                        </Link>
+                          <Link to={`/profile/${user._id}`} className="w-full md:w-auto">
+                            <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm w-full md:w-auto">
+                              View Profile
+                            </button>
+                          </Link>
+                        </div>
                       </div>
                     </div>
                   ))}
