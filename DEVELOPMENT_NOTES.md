@@ -164,33 +164,43 @@ All core features implemented and deployed
 - Messaging system works seamlessly
 - Users provide valuable feedback for future improvements
 
-1. **Mobile Optimization** (in progress)
-   - Refactor navigation bar for mobile (hamburger or bottom nav)
-   - Ensure all pages are responsive and touch-friendly
-   - Test on multiple devices and browsers
-   - Address any mobile-specific bugs or layout issues
-2. **Social Features** (Optional - can be added post-launch)
-
 ### Post-Launch Features (Future iterations):
 **Goal: Enhance based on real user feedback**
 
-1. **Advanced Search Features**
-   - Add compatibility scoring algorithm
-   - Implement distance-based matching
-   - Create mutual interest notifications
-   - Add climbing grade compatibility matching
+### High-Impact Feature Ideas (For Resume & User Value)
 
-2. **Real-time Enhancements**
-   - Push notifications for new messages
-   - Online status indicators
-   - Message read receipts
-   - Typing indicators improvements
+1. **Smart Matching & Compatibility Score**
+   - Develop a custom compatibility algorithm that scores users based on climbing style, skill, schedule, location, and preferences/interests.
+   - Display a “match score” or “best matches” list to users.
+   - Highlights algorithmic thinking and real-world value.
 
-3. **Mobile Optimization**
-   - Progressive Web App (PWA) features
-   - Mobile-specific UI improvements
-   - Touch-friendly interactions
-   - Offline functionality
+2. **Real-Time Push Notifications**
+   - Integrate browser push notifications (Web Push API) for new messages, matches, or invites.
+   - Optionally, add email notifications for important events.
+   - Improves user engagement and demonstrates full-stack skills.
+
+3. **Social/Community Feed**
+   - Add a “Climbing Feed” or “Events” page where users can post sessions, find group climbs, or share photos.
+   - Enables community building and content sharing.
+
+4. **In-App Scheduling & Calendar Integration**
+   - Allow users to propose, accept, and track climbing sessions with others.
+   - Integrate with Google Calendar or iCal for reminders.
+   - Adds real-world utility and technical depth.
+
+5. **Location-Based Features**
+   - Show nearby gyms or outdoor spots using a map (Google Maps API or Mapbox).
+   - Let users “check in” or see who’s climbing nearby.
+   - Demonstrates geolocation and mapping skills.
+
+6. **PWA (Progressive Web App) Capabilities**
+   - Make the app installable, offline-capable, and mobile-native-like.
+   - Shows modern web app skills.
+
+7. **Leaderboard, Achievements & Game System**
+   - Add a leaderboard to rank users by achievements, sessions, or activity.
+   - Implement fun achievement badges and gamification elements (e.g., streaks, challenges, levels).
+   - Encourage engagement and friendly competition.
 
 ## Technical Decisions Made:
 - **Frontend**: React + TypeScript + Tailwind CSS + React Router
@@ -298,6 +308,6 @@ climbing-friend-finder/
 *Last updated: 8/28/25 - fixed dates issues and layout on desktop/mobile
 
 ### Next Step
-fix layout of different pages on mobile
+Smart matching and compatibility score system
 
 *side note: solo leveling theme for this app? opposite of whole goal of app but could explore(personal note)
