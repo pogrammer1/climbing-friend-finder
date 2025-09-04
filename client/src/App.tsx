@@ -11,6 +11,7 @@ import Profile from './pages/Profile';
 import Search from './pages/Search';
 import Messages from './pages/Messages';
 import ClimbingHistory from './pages/ClimbingHistory';
+import LocationsMap from './pages/LocationsMap';
 
 function AppContent() {
   return (
@@ -67,6 +68,14 @@ function AppContent() {
               <>
                 <Navigation />
                 <ClimbingHistory />
+              </>
+            </ProtectedRoute>
+          } />
+          <Route path="/locations" element={
+            <ProtectedRoute>
+              <>
+                <Navigation />
+                <LocationsMap />
               </>
             </ProtectedRoute>
           } />

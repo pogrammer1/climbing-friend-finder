@@ -8,6 +8,10 @@ export interface IUser extends Document {
   lastName: string;
   bio?: string;
   location?: string;
+  coordinates?: {
+    latitude: number;
+    longitude: number;
+  };
   climbingGrade: {
     bouldering?: string;
     sport?: string;
@@ -69,6 +73,18 @@ const UserSchema = new Schema<IUser>({
   location: {
     type: String,
     maxlength: 100
+  },
+  coordinates: {
+    latitude: {
+      type: Number,
+      min: -90,
+      max: 90
+    },
+    longitude: {
+      type: Number,
+      min: -180,
+      max: 180
+    }
   },
   climbingGrade: {
     bouldering: {

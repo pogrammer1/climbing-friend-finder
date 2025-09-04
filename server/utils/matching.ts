@@ -22,8 +22,40 @@ function jaccardSimilarity(arr1: string[], arr2: string[]): number {
   return intersection.size / union.size;
 }
 
-// Location: simple string match (upgrade to geo distance if you add coordinates)
+// Helper: Calculate distance between two points using Haversine formula
+function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const R = 6371; // Radius of the Earth in kilometers
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = 
+    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+    Math.sin(dLon/2) * Math.sin(dLon/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  const distance = R * c;
+  return distance;
+}
+
+// Location: geographic distance if coordinates available, otherwise string match
 function locationScore(a: IUser, b: IUser): number {
+  // If both users have coordinates, use geographic distance
+  if (a.coordinates?.latitude && a.coordinates?.longitude && 
+      b.coordinates?.latitude && b.coordinates?.longitude) {
+    const distance = calculateDistance(
+      a.coordinates.latitude, a.coordinates.longitude,
+      b.coordinates.latitude, b.coordinates.longitude
+    );
+    
+    // Score based on distance: closer = higher score
+    // 0-5km = 1.0, 5-25km = 0.8, 25-50km = 0.5, 50-100km = 0.3, >100km = 0.1
+    if (distance <= 5) return 1.0;
+    if (distance <= 25) return 0.8;
+    if (distance <= 50) return 0.5;
+    if (distance <= 100) return 0.3;
+    return 0.1;
+  }
+  
+  // Fallback to string matching if no coordinates
   if (!a.location || !b.location) return 0;
   return a.location.trim().toLowerCase() === b.location.trim().toLowerCase() ? 1 : 0;
 }
