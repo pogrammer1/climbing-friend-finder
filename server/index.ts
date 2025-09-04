@@ -8,6 +8,8 @@ import userRoutes from './routes/users';
 import messageRoutes, { setSocketIO } from './routes/messages';
 import climbingRoutes from './routes/climbing';
 import notificationsRoutes from './routes/notifications';
+import locationsRoutes from './routes/locations';
+import checkinsRoutes from './routes/checkins';
 
 const app = express();
 const server = createServer(app);
@@ -31,6 +33,8 @@ app.use('/api/users', userRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/climbing', climbingRoutes);
 app.use('/api/notifications', notificationsRoutes);
+app.use('/api/locations', locationsRoutes);
+app.use('/api/checkins', checkinsRoutes);
 
 // Test endpoint
 app.get('/api/test', (req, res) => {
