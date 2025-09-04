@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 
 interface Route {
@@ -8,6 +8,17 @@ interface Route {
   status: 'sent' | 'project' | 'attempted' | 'onsight' | 'flash';
   attempts?: number;
   notes?: string;
+}
+
+interface Location {
+  _id: string;
+  name: string;
+  type: 'gym' | 'outdoor' | 'crag' | 'boulder_field';
+  address: string;
+  city: string;
+  state: string;
+  climbingTypes: string[];
+  distance?: number;
 }
 
 interface ClimbingSessionFormProps {
@@ -36,10 +47,12 @@ const ClimbingSessionForm: React.FC<ClimbingSessionFormProps> = ({
   isLoading = false,
   error
 }) => {
-  const { token } = useAuth();
+  // For potential future authentication needs
+  useAuth();
   const [formData, setFormData] = useState({
     date: new Date().toLocaleDateString('en-CA'), // YYYY-MM-DD format in local timezone
     location: '',
+    locationId: '',
     climbingType: 'gym' as 'bouldering' | 'sport' | 'trad' | 'gym' | 'outdoor',
     routes: [] as Route[],
     duration: 120, // 2 hours default
@@ -48,6 +61,11 @@ const ClimbingSessionForm: React.FC<ClimbingSessionFormProps> = ({
     weather: '',
     conditions: ''
   });
+
+  const [locations, setLocations] = useState<Location[]>([]);
+  const [loadingLocations, setLoadingLocations] = useState(false);
+  const [locationFilter, setLocationFilter] = useState('');
+  const [showCustomLocation, setShowCustomLocation] = useState(false);
 
   const [newPartner, setNewPartner] = useState('');
   const [newRoute, setNewRoute] = useState<Route>({
@@ -71,6 +89,7 @@ const ClimbingSessionForm: React.FC<ClimbingSessionFormProps> = ({
       setFormData({
         date: new Date(session.date).toLocaleDateString('en-CA'), // YYYY-MM-DD format in local timezone
         location: session.location,
+        locationId: '',
         climbingType: session.climbingType as any,
         routes: session.routes,
         duration: session.duration,
@@ -82,6 +101,59 @@ const ClimbingSessionForm: React.FC<ClimbingSessionFormProps> = ({
     }
   }, [session]);
 
+  const fetchLocations = useCallback(async () => {
+    setLoadingLocations(true);
+    try {
+      const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+      const response = await fetch(`${API_BASE_URL}/api/locations?limit=100`);
+      if (response.ok) {
+        const data = await response.json();
+        setLocations(data);
+      }
+    } catch (error) {
+      console.error('Error fetching locations:', error);
+    }
+    setLoadingLocations(false);
+  }, []);
+
+  const fetchNearbyLocations = useCallback(async (lat: number, lng: number) => {
+    setLoadingLocations(true);
+    try {
+      const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+      const response = await fetch(`${API_BASE_URL}/api/locations/nearby/${lat}/${lng}?radius=50&limit=50`);
+      if (response.ok) {
+        const data = await response.json();
+        setLocations(data);
+      }
+    } catch (error) {
+      console.error('Error fetching nearby locations:', error);
+      fetchLocations(); // Fallback to all locations
+    }
+    setLoadingLocations(false);
+  }, [fetchLocations]);
+
+  // Get user's location and fetch nearby locations
+  useEffect(() => {
+    const getUserLocation = () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            fetchNearbyLocations(position.coords.latitude, position.coords.longitude);
+          },
+          (error) => {
+            console.log('Could not get user location:', error);
+            fetchLocations(); // Fallback to all locations
+          }
+        );
+      } else {
+        fetchLocations(); // Fallback to all locations
+      }
+    };
+
+    fetchLocations();
+    getUserLocation();
+  }, [fetchLocations, fetchNearbyLocations]);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -89,6 +161,33 @@ const ClimbingSessionForm: React.FC<ClimbingSessionFormProps> = ({
       [name]: value
     }));
   };
+
+  const handleLocationSelect = (location: Location) => {
+    setFormData(prev => ({
+      ...prev,
+      location: location.name,
+      locationId: location._id
+    }));
+    setLocationFilter('');
+    setShowCustomLocation(false);
+  };
+
+  const handleCustomLocationToggle = () => {
+    setShowCustomLocation(!showCustomLocation);
+    if (!showCustomLocation) {
+      setFormData(prev => ({
+        ...prev,
+        location: '',
+        locationId: ''
+      }));
+    }
+  };
+
+  const filteredLocations = locations.filter(location =>
+    location.name.toLowerCase().includes(locationFilter.toLowerCase()) ||
+    location.city.toLowerCase().includes(locationFilter.toLowerCase()) ||
+    location.state.toLowerCase().includes(locationFilter.toLowerCase())
+  );
 
   const addPartner = () => {
     if (newPartner.trim() && !formData.partners.includes(newPartner.trim())) {
@@ -131,14 +230,14 @@ const ClimbingSessionForm: React.FC<ClimbingSessionFormProps> = ({
     }));
   };
 
-  const updateRoute = (index: number, field: keyof Route, value: any) => {
-    setFormData(prev => ({
-      ...prev,
-      routes: prev.routes.map((route, i) => 
-        i === index ? { ...route, [field]: value } : route
-      )
-    }));
-  };
+  // const updateRoute = (index: number, field: keyof Route, value: any) => {
+  //   setFormData(prev => ({
+  //     ...prev,
+  //     routes: prev.routes.map((route, i) => 
+  //       i === index ? { ...route, [field]: value } : route
+  //     )
+  //   }));
+  // };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -185,16 +284,81 @@ const ClimbingSessionForm: React.FC<ClimbingSessionFormProps> = ({
               <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-1">
                 Location *
               </label>
-              <input
-                type="text"
-                id="location"
-                name="location"
-                value={formData.location}
-                onChange={handleInputChange}
-                placeholder="Gym name or climbing area"
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+              
+              {!showCustomLocation ? (
+                <div className="space-y-2">
+                  {/* Location Search/Filter */}
+                  <input
+                    type="text"
+                    placeholder="Search locations..."
+                    value={locationFilter}
+                    onChange={(e) => setLocationFilter(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  
+                  {/* Selected Location Display */}
+                  {formData.location && (
+                    <div className="p-2 bg-blue-50 border border-blue-200 rounded-md text-sm">
+                      <span className="font-medium">Selected:</span> {formData.location}
+                    </div>
+                  )}
+                  
+                  {/* Location Options */}
+                  {locationFilter && (
+                    <div className="max-h-40 overflow-y-auto border border-gray-300 rounded-md">
+                      {loadingLocations ? (
+                        <div className="p-3 text-center text-gray-500">Loading locations...</div>
+                      ) : filteredLocations.length > 0 ? (
+                        filteredLocations.slice(0, 10).map((location) => (
+                          <button
+                            key={location._id}
+                            type="button"
+                            onClick={() => handleLocationSelect(location)}
+                            className="w-full text-left p-3 hover:bg-gray-50 border-b border-gray-200 last:border-b-0"
+                          >
+                            <div className="font-medium">{location.name}</div>
+                            <div className="text-sm text-gray-600">
+                              {location.city}, {location.state} • {location.type}
+                              {location.distance && ` • ${location.distance}km away`}
+                            </div>
+                          </button>
+                        ))
+                      ) : (
+                        <div className="p-3 text-center text-gray-500">No locations found</div>
+                      )}
+                    </div>
+                  )}
+                  
+                  {/* Custom Location Toggle */}
+                  <button
+                    type="button"
+                    onClick={handleCustomLocationToggle}
+                    className="text-blue-600 hover:text-blue-700 text-sm underline"
+                  >
+                    Can't find your location? Enter manually
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <input
+                    type="text"
+                    id="location"
+                    name="location"
+                    value={formData.location}
+                    onChange={handleInputChange}
+                    placeholder="Enter custom location"
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleCustomLocationToggle}
+                    className="text-blue-600 hover:text-blue-700 text-sm underline"
+                  >
+                    Choose from existing locations
+                  </button>
+                </div>
+              )}
             </div>
             
             <div>
