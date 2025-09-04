@@ -56,6 +56,7 @@ const messages_1 = __importStar(require("./routes/messages"));
 const climbing_1 = __importDefault(require("./routes/climbing"));
 const notifications_1 = __importDefault(require("./routes/notifications"));
 const locations_1 = __importDefault(require("./routes/locations"));
+const checkins_1 = __importDefault(require("./routes/checkins"));
 const app = (0, express_1.default)();
 const server = (0, http_1.createServer)(app);
 const io = new socket_io_1.Server(server, {
@@ -76,6 +77,7 @@ app.use('/api/messages', messages_1.default);
 app.use('/api/climbing', climbing_1.default);
 app.use('/api/notifications', notifications_1.default);
 app.use('/api/locations', locations_1.default);
+app.use('/api/checkins', checkins_1.default);
 // Test endpoint
 app.get('/api/test', (req, res) => {
     res.json({ message: 'Climbing Friend Finder API is running!' });
