@@ -305,10 +305,10 @@ climbing-friend-finder/
 
 
 ---
-*Last updated: 8/30/25 - Smart matching and compatibility score system
+*Last updated: 10/16/25 - nearby gyms displayed on leaflet map, logging gym location improved
 
 ### Next Step
-location-based features like showing nearby gyms/outdoor spots on map, as well as change the ways u can log a gym in the history page by having gyms you can select from instead of typing in one. 
+fix any bugs or issues with last implementation. Find priority for app
 
 *side note: solo leveling theme for this app? opposite of whole goal of app but could explore(personal note)
 *change name to Peak
