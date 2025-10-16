@@ -5,6 +5,7 @@ import { Server } from 'socket.io';
 import { connectDB } from './config/database';
 import authRoutes from './routes/auth';
 import userRoutes from './routes/users';
+import gymsRoutes from './routes/gyms';
 import messageRoutes, { setSocketIO } from './routes/messages';
 import climbingRoutes from './routes/climbing';
 import notificationsRoutes from './routes/notifications';
@@ -30,6 +31,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/climbing', climbingRoutes);
+app.use('/api/gyms', gymsRoutes);
 app.use('/api/notifications', notificationsRoutes);
 
 // Test endpoint

@@ -58,6 +58,9 @@ const ClimbingSessionForm: React.FC<ClimbingSessionFormProps> = ({
     attempts: 1,
     notes: ''
   });
+  const [gyms, setGyms] = useState<{ _id: string; name: string }[]>([]);
+  const [selectedGymId, setSelectedGymId] = useState<string>('');
+  const [otherGymName, setOtherGymName] = useState('');
 
   const climbingTypeOptions = ['bouldering', 'sport', 'trad', 'gym', 'outdoor'];
   const routeTypeOptions = ['bouldering', 'sport', 'trad'];
@@ -81,6 +84,64 @@ const ClimbingSessionForm: React.FC<ClimbingSessionFormProps> = ({
       });
     }
   }, [session]);
+
+  useEffect(() => {
+    // Try browser geolocation first and query nearby gyms; fallback to full list
+    async function fetchNearbyGyms() {
+      try {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(async (pos) => {
+            const lat = pos.coords.latitude;
+            const lng = pos.coords.longitude;
+            try {
+              const res = await fetch(`${process.env.REACT_APP_API_URL}/api/gyms/nearby?lat=${lat}&lng=${lng}&radius=20000`);
+              if (res.ok) {
+                const data = await res.json();
+                if (data && data.length) {
+                  setGyms(data);
+                  return;
+                }
+              }
+            } catch (e) {
+              console.warn('Nearby gyms fetch failed, falling back', e);
+            }
+            // fallback to full list
+            const resAll = await fetch(`${process.env.REACT_APP_API_URL}/api/gyms`);
+            if (resAll.ok) {
+              const all = await resAll.json();
+              setGyms(all);
+            }
+          }, async (err) => {
+            // permission denied or other error - fallback to full list
+            const resAll = await fetch(`${process.env.REACT_APP_API_URL}/api/gyms`);
+            if (resAll.ok) {
+              const all = await resAll.json();
+              setGyms(all);
+            }
+          });
+        } else {
+          const resAll = await fetch(`${process.env.REACT_APP_API_URL}/api/gyms`);
+          if (resAll.ok) {
+            const all = await resAll.json();
+            setGyms(all);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load gyms', err);
+      }
+    }
+    fetchNearbyGyms();
+    // If a gym was selected from the map, prefill
+    const selId = localStorage.getItem('selectedGymId');
+    const selName = localStorage.getItem('selectedGymName');
+    if (selId && selName) {
+      setSelectedGymId(selId);
+      setFormData(prev => ({ ...prev, location: selName }));
+      // clear temporary selection
+      localStorage.removeItem('selectedGymId');
+      localStorage.removeItem('selectedGymName');
+    }
+  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -182,19 +243,43 @@ const ClimbingSessionForm: React.FC<ClimbingSessionFormProps> = ({
             </div>
             
             <div>
-              <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-1">
-                Location *
+              <label htmlFor="gymSelect" className="block text-sm font-medium text-gray-700 mb-1">
+                Gym / Location *
               </label>
-              <input
-                type="text"
-                id="location"
-                name="location"
-                value={formData.location}
-                onChange={handleInputChange}
-                placeholder="Gym name or climbing area"
-                required
+              <select
+                id="gymSelect"
+                name="gymSelect"
+                value={selectedGymId}
+                onChange={(e) => {
+                  setSelectedGymId(e.target.value);
+                  const gym = gyms.find(g => g._id === e.target.value);
+                  if (gym) {
+                    setFormData(prev => ({ ...prev, location: gym.name }));
+                    setOtherGymName('');
+                  } else {
+                    setFormData(prev => ({ ...prev, location: '' }));
+                  }
+                }}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+              >
+                <option value="">Select a gym (or choose Other)</option>
+                {gyms.map(g => (
+                  <option key={g._id} value={g._id}>{g.name}</option>
+                ))}
+                <option value="other">Other (type your gym)</option>
+              </select>
+              {selectedGymId === 'other' && (
+                <input
+                  type="text"
+                  id="otherGym"
+                  name="otherGym"
+                  value={otherGymName}
+                  onChange={(e) => { setOtherGymName(e.target.value); setFormData(prev => ({ ...prev, location: e.target.value })); }}
+                  placeholder="Type gym name or climbing area"
+                  required
+                  className="w-full mt-2 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              )}
             </div>
             
             <div>

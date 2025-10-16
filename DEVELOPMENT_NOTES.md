@@ -308,8 +308,7 @@ climbing-friend-finder/
 *Last updated: 8/30/25 - Smart matching and compatibility score system
 
 ### Next Step
-location-based features like showing nearby gyms/outdoor spots on map, as well as change the ways u can log a gym in the history 
-page by having gyms you can select from instead of typing in one. 
+location-based features like showing nearby gyms/outdoor spots on map, as well as change the ways u can log a gym in the history page by having gyms you can select from instead of typing in one. 
 
 *side note: solo leveling theme for this app? opposite of whole goal of app but could explore(personal note)
 *change name to Peak

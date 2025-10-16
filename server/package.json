@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "ts-node index.ts",
-    "dev": "ts-node index.ts",
+  "start": "ts-node index.ts",
+  "seed:gyms": "ts-node ./seed/seedGyms.ts",
+  "dev": "ts-node index.ts",
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

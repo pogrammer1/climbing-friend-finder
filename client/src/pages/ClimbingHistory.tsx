@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import ClimbingSessionForm from '../components/ClimbingSessionForm';
+import GymsMap from '../components/GymsMap';
 
 interface ClimbingSession {
   _id: string;
@@ -84,6 +85,16 @@ const ClimbingHistory: React.FC = () => {
       if (statisticsRes.ok) {
         const statisticsData = await statisticsRes.json();
         setStatistics(statisticsData);
+      }
+      // prefetch gyms for selection/map features
+      try {
+        const gymsRes = await fetch(`${process.env.REACT_APP_API_URL}/api/gyms`);
+        if (gymsRes.ok) {
+          // might store them in state later; for now just warm the cache
+          await gymsRes.json();
+        }
+      } catch (e) {
+        console.warn('Failed to prefetch gyms', e);
       }
     } catch (error) {
       console.error('Error fetching climbing data:', error);
@@ -291,6 +302,29 @@ const ClimbingHistory: React.FC = () => {
                   >
                     Add Session
                   </button>
+                </div>
+                <div className="mb-6">
+                  <GymsMap onSelectGym={(gymId: string) => {
+                    // find gym name from prefetched gyms list
+                    // we'll fetch gyms here to resolve name
+                    (async () => {
+                      try {
+                        const res = await fetch(`${process.env.REACT_APP_API_URL}/api/gyms`);
+                        if (res.ok) {
+                          const all = await res.json();
+                          const gym = all.find((g: any) => g._id === gymId);
+                          if (gym) {
+                            // open the form and prefill
+                            setShowSessionForm(true);
+                            setEditingSession(null);
+                            // communicate to the form by storing selectedGymId in local storage temporarily
+                            localStorage.setItem('selectedGymId', gym._id);
+                            localStorage.setItem('selectedGymName', gym.name);
+                          }
+                        }
+                      } catch (e) { console.warn('Failed to fetch gyms for selection', e); }
+                    })();
+                  }} />
                 </div>
                 
                 {sessions.length === 0 ? (
