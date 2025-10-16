@@ -255,7 +255,7 @@ cd server && npm install
 - Add MongoDB Atlas connection string
 - Format: `MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/climbing-friend-finder?retryWrites=true&w=majority`
 
-## Project Architecture:
+## Project Architecture: (personal local reference)
 ```
 climbing-friend-finder/
 ├── client/                 # React frontend
@@ -274,29 +274,29 @@ climbing-friend-finder/
 ```
 
 ## Current Features:
-- ✅ User registration and login with JWT authentication
-- ✅ Protected routes and navigation
-- ✅ User profile management (view/edit)
-- ✅ Climbing preferences and availability
-- ✅ User search and matching system with advanced filters
-- ✅ Pagination and user profile viewing
-- ✅ Complete real-time messaging system with Socket.IO
-- ✅ Instant message delivery without page refresh
-- ✅ Typing indicators with debounce functionality
-- ✅ Connection status and conversation management
-- ✅ Unread message counting and notifications
-- ✅ Conversation creation from search results
-- ✅ Profile picture upload system with base64 encoding
-- ✅ Image validation and fallback avatars
-- ✅ Profile pictures displayed across all pages
-- ✅ Climbing history and achievements system
-- ✅ Session tracking and progress analytics
-- ✅ Automatic achievement awarding (first climb, consistency, variety)
-- ✅ Climbing statistics and performance metrics
-- ✅ Sample user data for testing
-- ✅ Responsive design with Tailwind CSS
-- ✅ MongoDB database integration
-- ✅ TypeScript for type safety
+- User registration and login with JWT authentication
+- Protected routes and navigation
+- User profile management (view/edit)
+- Climbing preferences and availability
+- User search and matching system with advanced filters
+- Pagination and user profile viewing
+- Complete real-time messaging system with Socket.IO
+- Instant message delivery without page refresh
+- Typing indicators with debounce functionality
+-  Connection status and conversation management
+- Unread message counting and notifications
+- Conversation creation from search results
+- Profile picture upload system with base64 encoding
+- Image validation and fallback avatars
+- Profile pictures displayed across all pages
+- Climbing history and achievements system
+- Session tracking and progress analytics
+- Automatic achievement awarding (first climb, consistency, variety)
+- Climbing statistics and performance metrics
+- Sample user data for testing
+- Responsive design with Tailwind CSS
+- MongoDB database integration
+- TypeScript for type safety
 
 ## Recent Fixes & Feedback (Optional Addition, maybe add or delete later)
 
@@ -312,3 +312,4 @@ location-based features like showing nearby gyms/outdoor spots on map, as well a
 page by having gyms you can select from instead of typing in one. 
 
 *side note: solo leveling theme for this app? opposite of whole goal of app but could explore(personal note)
+*change name to Peak

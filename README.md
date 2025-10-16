@@ -11,8 +11,8 @@ A web application to help climbers find friends, socialize, and meet up at climb
 ## Tech Stack
 - **Frontend:** React (TypeScript), Tailwind CSS
 - **Backend:** Node.js, Express, TypeScript
-- **Database:** MongoDB (planned)
-- **Authentication:** JWT or Auth0 (planned)
+- **Database:** MongoDB 
+- **Authentication:** JWT or Auth0 
 
 ## Getting Started
 
